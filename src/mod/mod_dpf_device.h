@@ -7,7 +7,10 @@
 
 #include "lua.h"
 
+const static char *MODt_DPF_DEVICE = "t_Dpf.Device";
+
 #define LUA_DPF_DEVICE_NAME "Dpf"
+
 LUAMOD_API int (luaopen_dpf_device)(lua_State *L);
 
 #endif //LDPF4L_MOD_DPF_DEVICE_H

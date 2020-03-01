@@ -141,9 +141,7 @@ static int _context_devices(lua_State *L) {
 static int _context_gc(lua_State *L) {
     libusb_context **context = (libusb_context **) luaU_checkoutType(L, t_USB_CONTEXT);
     libusb_exit(*context);
-    log_trace("["
-                      t_USB_CONTEXT
-                      " gc]");
+    log_trace("[%s gc]", t_USB_CONTEXT);
     return 0;
 }
 
@@ -195,7 +193,7 @@ static int _usb_device_info(lua_State *L) {
 
 static int _usb_device_to_string(lua_State *L) {
     luaU_checkoutType(L, t_USB_DEVICE);
-    lua_pushstring(L, "["t_USB_DEVICE" *]");
+    lua_pushfstring(L, "[%s *]", t_USB_DEVICE);
     return 1;
 }
 
@@ -331,9 +329,7 @@ static int _usb_device_config_info(lua_State *L) {
 static int _usb_device_config_gc(lua_State *L) {
     config_descriptor **config = luaU_checkoutType(L, t_DEVICE_CONFIG);
     libusb_free_config_descriptor(*config);
-    log_trace("["
-                      t_DEVICE_CONFIG
-                      " gc]");
+    log_trace("[%s gc]", t_DEVICE_CONFIG);
     return 0;
 }
 
