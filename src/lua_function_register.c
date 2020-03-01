@@ -11,9 +11,15 @@
 #include "lauxlib.h"
 
 #include "mod/mod_host_log.h"
+#include "mod/mod_num_array.h"
+#include "mod/mod_usb_explorer.h"
+#include "mod/mod_dpf_device.h"
 
 static const luaL_Reg loadedExternalLibs[] = {
-        {LUA_HOST_LOGGER_NAME, luaopen_log},
+        {LUA_HOST_LOGGER_NAME,  luaopen_log},
+        {LUA_NUMBER_ARRAY_NAME, luaopen_number_array},
+        {LUA_USB_EXPLORER_NAME, luaopen_usb_explorer},
+        {LUA_DPF_DEVICE_NAME,   luaopen_dpf_device},
         {NULL, NULL}
 };
 

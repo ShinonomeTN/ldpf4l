@@ -22,6 +22,12 @@ list(APPEND SRC_MAIN
 list(APPEND SRC_MOD
         src/mod/mod_host_log.h
         src/mod/mod_host_log.c
+        src/mod/mod_num_array.h
+        src/mod/mod_num_array.c
+        src/mod/mod_dpf_device.h
+        src/mod/mod_dpf_device.c
+        src/mod/mod_usb_explorer.h
+        src/mod/mod_usb_explorer.c
         )
 
 list(APPEND SRC_UTILS
@@ -45,6 +51,11 @@ list(APPEND SRC_DPF_DRIVER
         src/driver/dpf/dpf_usb_utils.h
         src/driver/dpf/dpf_usb_utils.c
         )
+
+add_compile_definitions(
+        LOG_USE_COLOR
+#        LOGGER_DISABLE_DEBUG_INFO
+)
 
 add_executable(ldpf4l ${SRC_MAIN} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
 

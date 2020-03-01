@@ -21,14 +21,9 @@ static int luaM_logLevel(lua_State *L) {
 }
 
 static int luaM_logLevelName(lua_State *L) {
-    const char* logLevelName = log_get_level_name();
+    const char *logLevelName = log_get_level_name();
     lua_pushstring(L, logLevelName);
     return 1;
-}
-
-static int luaM_logInfo(lua_State *L) {
-    log_info(lua_tostring(L, -1));
-    return 0;
 }
 
 static int luaM_logTrace(lua_State *L) {
@@ -36,11 +31,34 @@ static int luaM_logTrace(lua_State *L) {
     return 0;
 }
 
+static int luaM_logInfo(lua_State *L) {
+    log_info(lua_tostring(L, -1));
+    return 0;
+}
+
+static int luaM_logWarn(lua_State *L) {
+    log_warn(lua_tostring(L, -1));
+    return 0;
+}
+
+static int luaM_logError(lua_State *L) {
+    log_error(lua_tostring(L, -1));
+    return 0;
+}
+
+static int luaM_logFatal(lua_State *L) {
+    log_fatal(lua_tostring(L, -1));
+    return 0;
+}
+
 static const struct luaL_Reg log[] = {
-        {"level", luaM_logLevel},
-        {"info", luaM_logInfo},
-        {"trace",luaM_logTrace},
-        {"levelName",luaM_logLevelName},
+        {"level",     luaM_logLevel},
+        {"info",      luaM_logInfo},
+        {"trace",     luaM_logTrace},
+        {"warn",      luaM_logWarn},
+        {"error",     luaM_logError},
+        {"fatal",     luaM_logFatal},
+        {"levelName", luaM_logLevelName},
         {NULL, NULL}
 };
 

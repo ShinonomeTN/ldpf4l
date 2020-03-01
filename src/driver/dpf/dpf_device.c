@@ -12,7 +12,6 @@
 #define USB_COMMAND_SET_PROPERTY 0x01
 
 struct dpf_device {
-    libusb_context *usbContext;
     libusb_device_handle *usbDevice;
 
     // Basic info
@@ -33,32 +32,32 @@ static unsigned char global_buffer_exec_cmd[16] = {
         0x00, 0x00, 0x00, 0x00
 };
 
-dpf_device *dpf_device_init_auto() {
-    dpf_device *device = (struct dpf_device *) malloc(sizeof(dpf_device));
-    if (!device) {
-        log_error("Could not allocate memory for DPF device context.");
-        return NULL;
+
+int dpf_device_open(libusb_device *device, dpf_device **new_device) {
+
+    struct libusb_device_descriptor descriptor;
+    libusb_get_device_descriptor(device, &descriptor);
+    int idVendor = descriptor.idVendor;
+    int idProduct = descriptor.idProduct;
+
+    if (idVendor != 0x1908 || idProduct != 0x0102) {
+        log_fatal("Attempt to open an unsupported device [vendor: %x, product: %x]", idVendor, idProduct);
+        return DPF_ERROR_DEVICE_NOT_SUPPORTED;
     }
 
-    libusb_context *context = NULL;
-    if (libusb_init(&context) < 0) {
-        log_error("Could not initialize USB context.");
-        return NULL;
-    }
-    libusb_set_debug(context, 3);
+    libusb_device_handle *handle;
 
-    libusb_device_handle *targetDevice = libusb_open_device_with_vid_pid(context, 0x1908, 0x0102);
-    if (!targetDevice) {
-        log_error("Usb device open failed.");
-        return NULL;
-    }
+    int result = libusb_open(device, &handle);
+    if (result < 0) return result;
 
-    device->usbContext = context;
-    device->usbDevice = targetDevice;
+    dpf_device *dpf = (dpf_device *) malloc(sizeof(dpf_device));
+    dpf->usbDevice = handle;
 
     log_debug("Dpf device created.");
 
-    return device;
+    *new_device = dpf;
+
+    return result;
 }
 
 int dpf_device_acquire_dimensions(dpf_device *device) {
@@ -199,10 +198,8 @@ int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, Re
 
 void dpf_destroy(dpf_device *device) {
     libusb_device_handle *handle = device->usbDevice;
-    libusb_context *context = device->usbContext;
 
     libusb_close(handle);
-    if (context) libusb_exit(context);
     free(device);
     log_debug("Dpf Device destroyed.");
 }

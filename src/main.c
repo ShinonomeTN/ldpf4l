@@ -98,8 +98,8 @@ static int protectedMain(lua_State *L) {
     int argc = (int) lua_tointeger(L, 1);
     char **argv = (char **) lua_touserdata(L, 2);
 
-    String *table1 = luaUtils_dumpStack(L);
-    log_debug("Stack table: \n%s", string_value(table1));
+    String *table1 = luaU_dumpStack(L);
+    log_trace("Stack table: \n%s", string_value(table1));
     string_free(table1);
 
     luaL_checkversion(L);
@@ -114,7 +114,7 @@ static int protectedMain(lua_State *L) {
 
     int loadFileResult = luaL_loadfile(L, mainScriptLocation);
     if (loadFileResult != LUA_OK) {
-        log_error("Error when loading file %s.", mainScriptLocation);
+        log_error("Error while loading file %s.", mainScriptLocation);
         return 0;
     }
 
@@ -130,7 +130,7 @@ static int protectedMain(lua_State *L) {
 
     if (status != LUA_OK) {
         const char *message = lua_tostring(L, -1);
-        lua_writestringerror("%s", message);
+        lua_writestringerror("%s\n", message);
         lua_pop(L, 1);
     }
     return status;
@@ -145,10 +145,10 @@ int main(int argc, char **argv) {
 
     lua_State *luaState = luaL_newstate();
     if (luaState == NULL) {
-        log_error("Cannot create LuaState: Not enough memory.");
+        log_fatal("Cannot create LuaState: Not enough memory.");
         return EXIT_FAILURE;
     }
-    log_info("%s: Lua machine initialized.");
+    log_info("Lua machine initialized.");
 
     lua_pushcfunction(luaState, &protectedMain);
     lua_pushinteger(luaState, argc);  /* 1st argument */
