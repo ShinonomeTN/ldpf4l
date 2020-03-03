@@ -45,7 +45,7 @@ typedef struct {
 
 unsigned int rgba_8_to_int(Rgba8* color);
 void rgba_8_from_int(Rgba8* color, unsigned int rgba);
-void rgba_8_on_color(Rgba8* color, Rgba8* anotherColor);
+void rgba_8_on_color(Rgba8* color, const Rgba8* anotherColor);
 void rgba_8_apply_alpha(Rgba8 *color, Rgba8 *backgroundColor);
 unsigned short rgba_8_to_rgb_565(Rgba8 * color);
 unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color);

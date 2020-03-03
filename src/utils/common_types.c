@@ -8,11 +8,11 @@
  * */
 
 int rect_tuple_width(RectTuple *rectTuple) {
-    return rectTuple->x1 - rectTuple->x0;
+    return rectTuple->x1 - rectTuple->x0 + 1;
 }
 
 int rect_tuple_height(RectTuple *rectTuple) {
-    return rectTuple->y1 - rectTuple->y0;
+    return rectTuple->y1 - rectTuple->y0 + 1;
 }
 
 void rect_tuple_set(RectTuple *rectTuple, unsigned int x0, unsigned int y0, unsigned int x1, unsigned y1) {
@@ -76,14 +76,14 @@ unsigned int rgba_8_to_int(Rgba8 *color) {
     return (color->red << 24U) + (color->green << 16U) + (color->blue << 8U) + (color->alpha);
 }
 
-void rgba_8_from_int(Rgba8 *color, unsigned int rgba) {
+void rgba_8_from_int(Rgba8 *color, const unsigned int rgba) {
     color->red = rgba >> 24U;
     color->green = (rgba & 0x00FF0000U) >> 16U;
     color->blue = (rgba & 0x0000FF00U) >> 8U;
     color->alpha = rgba & 0x000000FFU;
 }
 
-void rgba_8_on_color(Rgba8 *color, Rgba8 *anotherColor) {
+void rgba_8_on_color(Rgba8 *color, const Rgba8 *anotherColor) {
     // Just the blending formula
 #define RGBA_ALPHA_BLEND(colorA, alphaA, colorB, alphaB) \
     (unsigned char) ((((float) colorA * alphaA) + (colorB * alphaB) * (1 - alphaA)) / (alphaA + alphaB * (1 - alphaA)))

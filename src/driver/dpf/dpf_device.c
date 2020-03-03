@@ -167,7 +167,7 @@ int dpf_device_flush(dpf_device *device, RectTuple *rectTuple) {
 }
 
 int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, RectTuple *rectTuple) {
-#define TRANSFER_GET_DATA_SIZE(pixels) (pixels << 1U) // x2
+#define TRANSFER_GET_DATA_SIZE(pixels) (pixels << 1U) // x2 to short
     libusb_device_handle *deviceHandle = device->usbDevice;
 
     unsigned long pixels = rect_tuple_width(rectTuple) * rect_tuple_height(rectTuple);
@@ -180,8 +180,8 @@ int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, Re
     unsigned short *params = (unsigned short *) &command[7];
     params[0] = rectTuple->x0;
     params[1] = rectTuple->y0;
-    params[2] = rectTuple->x1 - 1;
-    params[3] = rectTuple->y1 - 1;
+    params[2] = rectTuple->x1;
+    params[3] = rectTuple->y1;
 
 //    command[7] = SPLIT_TO_2_BYTE_L(rectTuple->x0);
 //    command[8] = SPLIT_TO_2_BYTE_H(rectTuple->x0);
@@ -192,6 +192,8 @@ int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, Re
 //    command[13] = SPLIT_TO_2_BYTE_L(rectTuple->y1 - 1);
 //    command[14] = SPLIT_TO_2_BYTE_L(rectTuple->y1 - 1);
     command[15] = 0;
+
+    log_trace("Sending %dpx (%d Bytes) to device.", pixels, dataSize);
 
     return warp_scsi_write(deviceHandle, command, sizeof(global_buffer_exec_cmd), (unsigned char *) buffer, dataSize);
 }
