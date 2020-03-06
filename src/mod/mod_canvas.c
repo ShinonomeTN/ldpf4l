@@ -11,7 +11,10 @@
 #include "../utils/lua_utils.h"
 
 #include "../com/com_canvas.h"
+#include "../com/com_image.h"
 #include "../utils/log.h"
+
+#include "mod_image.h"
 
 #define t_CANVAS "t_Canvas"
 
@@ -109,6 +112,50 @@ static int _canvas_fill_color(lua_State *L) {
     return 0;
 }
 
+static int _canvas_draw_image(lua_State *L) {
+    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_image *image = (ll_image *) luaU_checkUserDataNotNull(L, MOD_T_IMAGE, 2);
+
+    int x = luaL_checkinteger(L, 3);
+    int y = luaL_checkinteger(L, 4);
+    RectTuple rectTuple = {
+            x,
+            y,
+            x + image->width - 1,
+            y + image->height - 1
+    };
+
+    unsigned char blend = lua_toboolean(L, 5);
+
+    ll_canvas_fill_data(self, &rectTuple, (const unsigned int *) image->data, blend);
+
+    return 0;
+}
+
+static int _canvas_draw_frame(lua_State *L) {
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+
+    RectTuple rect = {
+            luaL_checkinteger(L, 2),
+            luaL_checkinteger(L, 3),
+            luaL_checkinteger(L, 4),
+            luaL_checkinteger(L, 5)
+    };
+
+    Rgba8 color = {
+            luaL_checkinteger(L, 6),
+            luaL_checkinteger(L, 7),
+            luaL_checkinteger(L, 8),
+            luaL_checkinteger(L, 9)
+    };
+
+    int lineWidth = luaL_checkinteger(L, 10);
+
+    ll_canvas_draw_frame(canvas, &rect, &color, lineWidth);
+
+    return 0;
+}
+
 static int _canvas_get_size(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
@@ -163,6 +210,8 @@ LUA_TYPE_MEMBERS(t_CANVAS) {
 
         {"setPoint",      _canvas_set_point},
         {"fillColor",     _canvas_fill_color},
+        {"drawFrame",     _canvas_draw_frame},
+        {"drawImage",     _canvas_draw_image},
 
         {"getSize",       _canvas_get_size},
 

@@ -161,6 +161,8 @@ static int _screen_draw(lua_State *L) {
         return 2;
     }
 
+    ll_canvas_reset_dirty_rect(canvas);
+
     lua_pushboolean(L, 1);
     return 1;
 }

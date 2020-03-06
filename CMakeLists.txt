@@ -19,7 +19,13 @@ list(APPEND SRC_MAIN
         src/lua_function_register.c
         )
 
+list(APPEND SRC_LIB
+        src/lib/stb_image.h
+        )
+
 list(APPEND SRC_COM
+        src/com/com_image.h
+        src/com/com_image.c
         src/com/com_canvas.h
         src/com/com_canvas.c
         src/com/com_component.h
@@ -29,6 +35,8 @@ list(APPEND SRC_COM
         )
 
 list(APPEND SRC_MOD
+        src/mod/mod_image.h
+        src/mod/mod_image.c
         src/mod/mod_canvas.h
         src/mod/mod_canvas.c
         src/mod/mod_screen.h
@@ -66,9 +74,19 @@ list(APPEND SRC_DPF_DRIVER
 add_compile_definitions(
         LOG_USE_COLOR
         #        LOGGER_DISABLE_DEBUG_INFO
+        STB_IMAGE_IMPLEMENTATION
+        STB_IMAGE_STATIC
+        STBI_NO_PSD
+        STBI_NO_TGA
+        STBI_NO_GIF
+        STBI_NO_HDR
+        STBI_NO_PIC
+        STBI_NO_PNM
+
+        STBI_NO_SIMD
 )
 
-add_executable(ldpf4l ${SRC_MAIN} ${SRC_COM} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
+add_executable(ldpf4l ${SRC_MAIN} ${SRC_LIB} ${SRC_COM} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
 
 #target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/liblua.a -lm)
 # -lm for quick-fixing the compile problem

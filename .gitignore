@@ -1,5 +1,8 @@
 .idea/
 *.iml
 cmake-build-debug/
-
+/*.jpg
+/*.png
+/*.jpeg
+/test_image
 .DS_Store

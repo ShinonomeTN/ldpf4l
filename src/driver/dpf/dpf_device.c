@@ -217,7 +217,10 @@ int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, co
 
     log_trace("Sending %dpx (%d Bytes) to device.", pixels, dataSize);
 
-    return warp_scsi_write(deviceHandle, command, sizeof(global_buffer_exec_cmd), (unsigned char *) buffer, dataSize);
+    int result = warp_scsi_write(deviceHandle, command, sizeof(global_buffer_exec_cmd), (unsigned char *) buffer,
+                                 dataSize);
+
+    return result < 0 ? result : 0;
 }
 
 void dpf_destroy(dpf_device *device) {
@@ -271,12 +274,14 @@ int _flush_impl(ll_screen_device *device, const unsigned int *pixels, const Rect
         for (unsigned int iX = 0; iX < rWidth; iX++) {
 
             rgba_8_from_int(&color, pixels[(rectX + iX) + canvasY]);
-            rgba_8_apply_alpha(&color, &dpf->backgroundColor);
+            if (color.alpha != 255) rgba_8_apply_alpha(&color, &dpf->backgroundColor);
 
 //             attention: Because dpf is 2 bytes per pixel, so here the gap is 2
 //            deviceBuffer[(devicePointer * DPF_BYTE_PRE_PIXEL)] = TO_RGB565_H(color);
 //            deviceBuffer[(devicePointer * DPF_BYTE_PRE_PIXEL) + 1] = TO_RGB565_L(color);
-            buffer[pos++] = rgba_8_to_rgb_565_reverse(&color);
+            unsigned short pixel = rgba_8_to_rgb_565_reverse(&color);
+            buffer[pos++] = pixel;
+//            buffer[pos++] = rgba_8_to_rgb_565(&color);
         }
     }
 

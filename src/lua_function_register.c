@@ -16,6 +16,7 @@
 #include "mod/mod_buffer.h"
 #include "mod/mod_screen.h"
 #include "mod/mod_canvas.h"
+#include "mod/mod_image.h"
 
 static const luaL_Reg loadedExternalLibs[] = {
         {LUA_HOST_LOGGER_NAME,  luaopen_log},
@@ -26,6 +27,7 @@ static const luaL_Reg loadedExternalLibs[] = {
 
         {LUA_SCREEN_NAME,       luaopen_screen},
         {LUA_CANVAS_NAME,       luaopen_canvas},
+        {LUA_IMAGE_NAME,       luaopen_image},
         {NULL, NULL}
 };
 

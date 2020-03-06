@@ -57,26 +57,22 @@ end
 
 function testDrawRect(screen, canvas)
     print("Test draw Rect")
-    canvas:fillColor(0, (320 // 4), 239, 239, 255, 255, 255, 128)
-    screen:draw(canvas)
 
-    canvas:fillColor(20, 20, 127, 140, 100, 100, 250, 128)
-    screen:draw(canvas)
+    local rects = {
+        { rect = { 0, (320 // 4), 239, 239 }, color = { r = 255, g = 255, b = 255, a = 128 } },
+        { rect = { 50, 50, 230, 200 }, color = { r = 255, g = 100, b = 100, a = 128 } },
+        { rect = { 0, 180, 180, 320 }, color = { r = 100, g = 255, b = 100, a = 128 } },
+        { rect = { 40, 60, 141, 222 }, color = { r = 100, g = 255, b = 255, a = 128 } },
+        { rect = { 0, 162, 120, 319 }, color = { r = 255, g = 255, b = 100, a = 128 } },
+        { rect = { 125, 0, 239, 319 }, color = { r = 255, g = 100, b = 255, a = 128 } }
+    }
 
-    canvas:fillColor(50, 50, 230, 200, 255, 100, 100, 128)
-    screen:draw(canvas)
-
-    canvas:fillColor(0, 180, 180, 320, 100, 255, 100, 128)
-    screen:draw(canvas)
-
-    canvas:fillColor(40, 60, 141, 222, 100, 255, 255, 128)
-    screen:draw(canvas)
-
-    canvas:fillColor(0, 162, 120, 319, 255, 255, 100, 128)
-    screen:draw(canvas)
-
-    canvas:fillColor(125, 0, 239, 319, 255, 100, 255, 128)
-    screen:draw(canvas)
+    for _, v in pairs(rects) do
+        local rect = v.rect
+        local color = v.color
+        canvas:fillColor(rect[1], rect[2], rect[3], rect[4], color.r, color.g, color.b, color.a)
+        screen:draw(canvas)
+    end
 
     print("Finished")
 end
@@ -88,6 +84,71 @@ function testDrawDots(screen, canvas)
     end
     screen:draw(canvas)
     print("Finished")
+end
+
+function testDrawFrame(screen, canvas)
+    print("Test draw frames")
+    local frames = {
+        { rect = { 10, 10, 12, 50 }, color = { r = 255, g = 0, b = 0, a = 255 } },
+        { rect = { 15, 0, 90, 120 }, color = { r = 0, g = 255, b = 0, a = 255 } },
+        { rect = { 100, 50, 130, 180 }, color = { r = 0, g = 0, b = 255, a = 255 } },
+        { rect = { 50, 30, 190, 200 }, color = { r = 255, g = 0, b = 255, a = 255 } },
+        { rect = { 200, 60, 240, 300 }, color = { r = 255, g = 255, b = 0, a = 255 } },
+        { rect = { 60, 100, 230, 320 }, color = { r = 0, g = 255, b = 255, a = 255 } },
+    }
+
+    for _, v in pairs(frames) do
+        local rect = v.rect
+        local color = v.color
+        canvas:drawFrame(rect[1], rect[2], rect[3], rect[4], color.r, color.g, color.b, color.a, 1);
+        screen:draw(canvas);
+    end
+end
+
+function testDrawImages(screen, canvas)
+
+    local images = {
+        "./img1.jpg",
+        "./img2.jpg",
+        "./img3.jpg",
+        "./img4.jpg",
+        "./img5.png",
+        "./img6.png",
+        "./img7.png",
+        "./img8.png",
+        "./img9.jpeg",
+    }
+
+    for _, v in pairs(images) do
+        canvas:clear()
+        local image = Image.loadFile(v)
+        local imageSize = image:getSize()
+        print("Image loaded. Size " .. imageSize.width .. "x" .. imageSize.height)
+        local imageInfo = image:getInfo()
+        print("Color channels: origin " .. imageInfo.channels .. ", opened as " .. imageInfo.requiredChannels)
+        canvas:drawImage(image, 0, 0, false)
+        screen:draw(canvas)
+    end
+end
+
+function testDrawAnimate(screen, canvas)
+    local totalFrames = (87 - 30)
+    local frames = {};
+    for frame = 1, totalFrames do
+        frames[frame] = Image.loadFile("./test_image/00" .. frame + 29 .. ".png")
+    end
+
+    local x = (240 / 2) - (32 / 2)
+    local y = (320 / 2) - (32 / 2)
+
+    canvas:drawFrame(x - 1, y - 1, x + 32 + 1, y + 32 + 1, 255, 0, 0, 255, 1)
+    screen:draw(canvas);
+
+    for frame = 1, (totalFrames * 30) do
+        local current = frame % totalFrames + 1
+        canvas:drawImage(frames[current], x, y, false)
+        screen:draw(canvas)
+    end
 end
 
 log.level(4)
@@ -149,6 +210,7 @@ function useScreen(screen)
     local screenSize = screen:getSize()
     print("Dimension  : " .. screenSize.width .. "x" .. screenSize.height)
     print("Color depth: " .. screen:getColorDepth())
+    screen:setBackLightLevel(1);
 
     local canvas = Canvas.new(screenSize.width, screenSize.height);
     print("Canvas created.")
@@ -157,12 +219,29 @@ function useScreen(screen)
     local background = canvas:getBackground()
     print("Background : { red=" .. background.red .. ", green=" .. background.green .. ", blue=" .. background.blue .. ",alpha=" .. background.alpha .. " }")
 
-    testForceFlush(screen, canvas)
-    testDrawRectAndForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRectAndForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRect(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawDots(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawFrame(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawImages(screen, canvas)
     canvas:clear()
     screen:draw(canvas)
-    testDrawRect(screen, canvas)
-    testDrawDots(screen, canvas)
+    testDrawAnimate(screen, canvas)
+
+    screen:setBackLightLevel(7);
 end
 
 local screen = Screen.openDpf(device)

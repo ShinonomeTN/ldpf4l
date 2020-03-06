@@ -12,10 +12,10 @@
  * */
 
 typedef struct RectTuple {
-    unsigned int x0;
-    unsigned int y0;
-    unsigned int x1;
-    unsigned int y1;
+    int x0;
+    int y0;
+    int x1;
+    int y1;
 } RectTuple;
 
 //int rect_tuple_width(RectTuple* rectTuple);
@@ -42,10 +42,17 @@ void rect_tuple_enlarge_bound(RectTuple *target, RectTuple *by);
     (target)->y0 = (source)->y0;\
 }while(0)
 
+/*
+ * Point
+ *
+ * */
+
 typedef struct Vector {
-    unsigned int x;
-    unsigned int y;
+    int x;
+    int y;
 } PointTuple;
+
+#define point_tuple_equals(a, b) ((a)->x == (b)->x && (a)->y == (b)->y)
 
 /*
  *
@@ -63,6 +70,8 @@ typedef struct {
 unsigned int rgba_8_to_int(Rgba8 *color);
 
 void rgba_8_from_int(Rgba8 *color, unsigned int rgba);
+
+void rgba8_from_int_abgr(Rgba8 *color, const unsigned int argb);
 
 void rgba_8_on_color(Rgba8 *color, const Rgba8 *anotherColor);
 
