@@ -22,12 +22,6 @@ typedef struct number_array {
 } number_array;
 #define _LUA_TYPE_NAME "LuaBook.NumberArray"
 
-//static number_array *_type_check(lua_State *L) {
-//    void *data = luaL_checkudata(L, 1, _LUA_TYPE_NAME);
-//    luaL_argcheck(L, data != NULL, 1, NA_TYPE_ERR);
-//    return (number_array *) data;
-//}
-
 /*
  *
  *
@@ -46,7 +40,7 @@ static int _lua_new(lua_State *L) {
 }
 
 static int _lua_set(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutType(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
     int index = luaL_checkinteger(L, 2);
     double value = luaL_checknumber(L, 3);
 
@@ -57,7 +51,7 @@ static int _lua_set(lua_State *L) {
 }
 
 static int _lua_get(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutType(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
     int index = luaL_checkinteger(L, 2);
 
     luaL_argcheck(L, 1 <= index && index <= array->size, 2, NA_OUT_OF_RANGE);
@@ -68,14 +62,14 @@ static int _lua_get(lua_State *L) {
 }
 
 static int _lua_get_size(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutType(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
 
     lua_pushnumber(L, array->size);
     return 1;
 }
 
 static int _lua_to_string(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutType(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
 
     lua_pushfstring(L, _LUA_TYPE_NAME"[%d]", array->size);
 

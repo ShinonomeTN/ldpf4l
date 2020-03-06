@@ -7,7 +7,7 @@
 
 #include "string_wrapper.h"
 
-#define luaU_checkoutType(L, typeName) luaU_checkUserDataNotNull(L, typeName)
+#define luaU_checkoutSelf(L, typeName) luaU_checkUserDataNotNull(L, typeName, 1)
 
 #define LUA_LIB_FUNCTION(name) \
 static const struct luaL_Reg name##_function[] =
@@ -50,6 +50,6 @@ String *luaU_dumpStack(lua_State *L);
 
 void luaU_printStack(lua_State *L);
 
-void *luaU_checkUserDataNotNull(lua_State *L, const char *typeName);
+void *luaU_checkUserDataNotNull(lua_State *L, const char *typeName, int pos);
 
 #endif //LUA_TEST_LUA_UTILS_H

@@ -2,6 +2,9 @@
 
 #include "../../utils/common_types.h"
 
+#include "../../com/com_screen_device.h"
+
+
 #define DPF_BYTE_PRE_PIXEL 2
 
 #define DPF_ERROR_DEVICE_NOT_SUPPORTED 1
@@ -20,9 +23,13 @@ int dpf_device_set_brightness(dpf_device *device, unsigned int brightness);
 
 unsigned int dpf_device_get_brightness(dpf_device *device);
 
-int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, RectTuple *rectTuple);
+void dpf_device_set_background_color(dpf_device *device, unsigned char r, unsigned char g, unsigned char b);
 
-int dpf_device_flush(dpf_device *device, RectTuple *rectTuple);
+Rgba8 *dpf_device_get_background_color(dpf_device *device);
+
+int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, const RectTuple *rectTuple);
+
+int dpf_device_flush(dpf_device *device, const RectTuple *rectTuple);
 
 // Properties
 unsigned int dpf_device_screen_width(dpf_device *device);
@@ -35,3 +42,13 @@ unsigned long dpf_device_get_buffer_size(dpf_device *device);
 unsigned char *dpf_device_get_buffer(dpf_device *device);
 
 void dpf_destroy(dpf_device *device);
+
+/*
+ *
+ *
+ *
+ * */
+
+int dpf_open_screen_device(libusb_device *usbDevice, ll_screen_device *screenDevice);
+
+extern ll_screen_device_CLASS ll_dpf_screen_CLASS;

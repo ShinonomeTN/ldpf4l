@@ -19,13 +19,26 @@ list(APPEND SRC_MAIN
         src/lua_function_register.c
         )
 
+list(APPEND SRC_COM
+        src/com/com_canvas.h
+        src/com/com_canvas.c
+        src/com/com_component.h
+        src/com/com_component.c
+        src/com/com_screen_device.h
+        src/com/com_screen_device.c
+        )
+
 list(APPEND SRC_MOD
+        src/mod/mod_canvas.h
+        src/mod/mod_canvas.c
+        src/mod/mod_screen.h
+        src/mod/mod_screen.c
+        src/mod/mod_buffer.h
+        src/mod/mod_buffer.c
         src/mod/mod_host_log.h
         src/mod/mod_host_log.c
         src/mod/mod_num_array.h
         src/mod/mod_num_array.c
-        src/mod/mod_dpf_device.h
-        src/mod/mod_dpf_device.c
         src/mod/mod_usb_explorer.h
         src/mod/mod_usb_explorer.c
         )
@@ -37,27 +50,25 @@ list(APPEND SRC_UTILS
         src/utils/lua_utils.c
         src/utils/string_wrapper.h
         src/utils/string_wrapper.c
+        src/utils/common_types.h
+        src/utils/common_types.c
         )
 
 list(APPEND SRC_DPF_DRIVER
-        src/utils/common_types.h
-        src/utils/common_types.c
         src/driver/dpf/warp_scsi.h
         src/driver/dpf/warp_scsi.c
         src/driver/dpf/dpf_device.h
         src/driver/dpf/dpf_device.c
-        src/driver/dpf/dpf_canvas.h
-        src/driver/dpf/dpf_canvas.c
         src/driver/dpf/dpf_usb_utils.h
         src/driver/dpf/dpf_usb_utils.c
         )
 
 add_compile_definitions(
         LOG_USE_COLOR
-#        LOGGER_DISABLE_DEBUG_INFO
+        #        LOGGER_DISABLE_DEBUG_INFO
 )
 
-add_executable(ldpf4l ${SRC_MAIN} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
+add_executable(ldpf4l ${SRC_MAIN} ${SRC_COM} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
 
 #target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/liblua.a -lm)
 # -lm for quick-fixing the compile problem

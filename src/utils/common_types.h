@@ -11,24 +11,41 @@
  *
  * */
 
-typedef struct {
+typedef struct RectTuple {
     unsigned int x0;
     unsigned int y0;
     unsigned int x1;
     unsigned int y1;
 } RectTuple;
 
-int rect_tuple_width(RectTuple* rectTuple);
-int rect_tuple_height(RectTuple* rectTuple);
-void rect_tuple_set(RectTuple* rectTuple, unsigned int x0, unsigned int y0, unsigned int x1, unsigned y1);
+//int rect_tuple_width(RectTuple* rectTuple);
+#define rect_tuple_width(rect) ((rect)->x1 - (rect)->x0 + 1)
+//int rect_tuple_height(RectTuple* rectTuple);
+#define rect_tuple_height(rect) ((rect)->y1 - (rect)->y0 + 1)
+//void rect_tuple_set(RectTuple* rectTuple, unsigned int x0, unsigned int y0, unsigned int x1, unsigned y1);
+#define rect_tuple_set(rect, _x0, _y0, _x1, _y1) do {\
+    (rect)->x0 = (_x0);\
+    (rect)->y0 = (_y0);\
+    (rect)->x1 = (_x1);\
+    (rect)->y1 = (_y1);\
+} while(0)
+
 void rect_tuple_clip_bound(RectTuple *target, RectTuple *by);
+
 void rect_tuple_enlarge_bound(RectTuple *target, RectTuple *by);
-void rect_tuple_copy(const RectTuple* source, RectTuple *target);
+
+//void rect_tuple_copy(const RectTuple *source, RectTuple *target);
+#define rect_tuple_copy(source, target) do{\
+    (target)->x1 = (source)->x1;\
+    (target)->y1 = (source)->y1;\
+    (target)->x0 = (source)->x0;\
+    (target)->y0 = (source)->y0;\
+}while(0)
 
 typedef struct Vector {
     unsigned int x;
     unsigned int y;
-} PointTuple, Size;
+} PointTuple;
 
 /*
  *
@@ -43,11 +60,16 @@ typedef struct {
     unsigned char alpha;
 } Rgba8;
 
-unsigned int rgba_8_to_int(Rgba8* color);
-void rgba_8_from_int(Rgba8* color, unsigned int rgba);
-void rgba_8_on_color(Rgba8* color, const Rgba8* anotherColor);
+unsigned int rgba_8_to_int(Rgba8 *color);
+
+void rgba_8_from_int(Rgba8 *color, unsigned int rgba);
+
+void rgba_8_on_color(Rgba8 *color, const Rgba8 *anotherColor);
+
 void rgba_8_apply_alpha(Rgba8 *color, Rgba8 *backgroundColor);
-unsigned short rgba_8_to_rgb_565(Rgba8 * color);
+
+unsigned short rgba_8_to_rgb_565(Rgba8 *color);
+
 unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color);
 
 #define TO_RGB565_H(color) ((((color.red) & 0xf8U)) | (((color.green) & 0xe0U) >> 5U))

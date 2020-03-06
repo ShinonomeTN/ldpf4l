@@ -11,6 +11,8 @@
 #define USB_COMMAND_BLIT         0x12
 #define USB_COMMAND_SET_PROPERTY 0x01
 
+//int _flush_impl(struct ll_screen_device *device, unsigned int *pixels, RectTuple *dimension);
+
 struct dpf_device {
     libusb_device_handle *usbDevice;
 
@@ -20,6 +22,8 @@ struct dpf_device {
 
     unsigned long bufferSize;
     unsigned char *buffer;
+
+    Rgba8 backgroundColor;
 
     // Properties
     int brightness;
@@ -57,7 +61,24 @@ int dpf_device_open(libusb_device *device, dpf_device **new_device) {
 
     *new_device = dpf;
 
+    dpf_device_set_background_color(dpf, 0, 0, 0);
+
+    dpf->buffer = NULL;
+
     return result;
+}
+
+void dpf_device_set_background_color(dpf_device *device, unsigned char r, unsigned char g, unsigned char b) {
+    Rgba8 *backgroundColor = &(device->backgroundColor);
+    backgroundColor->red = r;
+    backgroundColor->green = g;
+    backgroundColor->blue = b;
+
+    backgroundColor->alpha = 0xFFu;
+}
+
+Rgba8 *dpf_device_get_background_color(dpf_device *device) {
+    return &(device->backgroundColor);
 }
 
 int dpf_device_acquire_dimensions(dpf_device *device) {
@@ -87,6 +108,7 @@ int dpf_device_acquire_dimensions(dpf_device *device) {
         device->screenHeight = height;
 
         device->bufferSize = width * height * DPF_BYTE_PRE_PIXEL;
+        if (device->buffer != NULL) free(device->buffer);
         device->buffer = (unsigned char *) malloc(sizeof(unsigned char) * device->bufferSize);
         if (!device->buffer) {
             log_error("Could not allocate screen buffer.");
@@ -162,11 +184,11 @@ unsigned int dpf_device_screen_height(dpf_device *device) {
     return device->screenHeight;
 }
 
-int dpf_device_flush(dpf_device *device, RectTuple *rectTuple) {
+int dpf_device_flush(dpf_device *device, const RectTuple *rectTuple) {
     return dpf_device_bulk_transfer(device, device->buffer, rectTuple);
 }
 
-int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, RectTuple *rectTuple) {
+int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, const RectTuple *rectTuple) {
 #define TRANSFER_GET_DATA_SIZE(pixels) (pixels << 1U) // x2 to short
     libusb_device_handle *deviceHandle = device->usbDevice;
 
@@ -200,8 +222,120 @@ int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, Re
 
 void dpf_destroy(dpf_device *device) {
     libusb_device_handle *handle = device->usbDevice;
-
     libusb_close(handle);
+
+    if (device->buffer != NULL) free(device->buffer);
     free(device);
     log_debug("Dpf Device destroyed.");
 }
+
+
+/*
+ *
+ *
+ *
+ * */
+
+int dpf_open_screen_device(libusb_device *usbDevice, ll_screen_device *screenDevice) {
+    dpf_device *dpf = NULL;
+    int result = dpf_device_open(usbDevice, &dpf);
+
+    if (result != 0) return result;
+
+    screenDevice->data = dpf;
+    screenDevice->name = "dpf";
+    screenDevice->class = &ll_dpf_screen_CLASS;
+    screenDevice->colorDepth = 16;
+
+    result = dpf_device_acquire_dimensions(dpf);
+
+    return result;
+}
+
+int _flush_impl(ll_screen_device *device, const unsigned int *pixels, const RectTuple *dimension) {
+    const unsigned int rWidth = rect_tuple_width(dimension);
+    const unsigned int rHeight = rect_tuple_height(dimension);
+
+    dpf_device *dpf = (dpf_device *) (device->data);
+
+    unsigned short *buffer = (unsigned short *) dpf->buffer;
+
+    Rgba8 color;
+    const unsigned int lineWidth = dpf->screenWidth;
+    const unsigned int rectX = dimension->x0;
+    const unsigned int rectY = dimension->y0;
+
+    unsigned long pos = 0;
+    for (unsigned int iY = 0; iY < rHeight; iY++) {
+        unsigned int canvasY = (rectY + iY) * lineWidth;
+        for (unsigned int iX = 0; iX < rWidth; iX++) {
+
+            rgba_8_from_int(&color, pixels[(rectX + iX) + canvasY]);
+            rgba_8_apply_alpha(&color, &dpf->backgroundColor);
+
+//             attention: Because dpf is 2 bytes per pixel, so here the gap is 2
+//            deviceBuffer[(devicePointer * DPF_BYTE_PRE_PIXEL)] = TO_RGB565_H(color);
+//            deviceBuffer[(devicePointer * DPF_BYTE_PRE_PIXEL) + 1] = TO_RGB565_L(color);
+            buffer[pos++] = rgba_8_to_rgb_565_reverse(&color);
+        }
+    }
+
+    int result = dpf_device_flush(dpf, dimension);
+    if (result < 0) log_warn("could not flush data to screen.");
+    return result;
+}
+
+int _set_backlight_level_impl(ll_screen_device *device, const int level) {
+    int result = dpf_device_set_brightness((dpf_device *) (device->data), (unsigned int) level);
+    return result;
+}
+
+int _get_backlight_level_impl(ll_screen_device *device, int *level) {
+    *level = dpf_device_get_brightness((dpf_device *) (device->data));
+    return 0;
+}
+
+int _set_background_impl(ll_screen_device *device, const Rgba8 *color) {
+    dpf_device_set_background_color(((dpf_device *) device->data), color->red, color->green, color->blue);
+    return 0;
+}
+
+int _get_background_impl(ll_screen_device *device, Rgba8 *color) {
+    Rgba8 *c = dpf_device_get_background_color((dpf_device *) (device->data));
+    color->red = c->red;
+    color->green = c->green;
+    color->blue = c->blue;
+    color->alpha = 255;
+    return 0;
+}
+
+int _get_width_impl(ll_screen_device *device, unsigned int *output) {
+    *output = dpf_device_screen_width((dpf_device *) (device->data));
+    return 0;
+}
+
+int _get_height_impl(ll_screen_device *device, unsigned int *output) {
+    *output = dpf_device_screen_height((dpf_device *) (device->data));
+    return 0;
+}
+
+void _destroy_impl(ll_screen_device *device) {
+    dpf_destroy((dpf_device *) device->data);
+}
+
+/*
+ *
+ *
+ *
+ * */
+
+ll_screen_device_CLASS ll_dpf_screen_CLASS = {
+        .flush = _flush_impl,
+        .get_backlight_level = _get_backlight_level_impl,
+        .set_backlight_level = _set_backlight_level_impl,
+        .get_background = _get_background_impl,
+        .set_background = _set_background_impl,
+        .get_width = _get_width_impl,
+        .get_height = _get_height_impl,
+        .destroy = _destroy_impl
+};

@@ -7,20 +7,20 @@
  * RectTuple
  * */
 
-int rect_tuple_width(RectTuple *rectTuple) {
-    return rectTuple->x1 - rectTuple->x0 + 1;
-}
+//int rect_tuple_width(RectTuple *rectTuple) {
+//    return rectTuple->x1 - rectTuple->x0 + 1;
+//}
 
-int rect_tuple_height(RectTuple *rectTuple) {
-    return rectTuple->y1 - rectTuple->y0 + 1;
-}
+//int rect_tuple_height(RectTuple *rectTuple) {
+//    return rectTuple->y1 - rectTuple->y0 + 1;
+//}
 
-void rect_tuple_set(RectTuple *rectTuple, unsigned int x0, unsigned int y0, unsigned int x1, unsigned y1) {
-    rectTuple->x0 = x0;
-    rectTuple->y0 = y0;
-    rectTuple->x1 = x1;
-    rectTuple->y1 = y1;
-}
+//void rect_tuple_set(RectTuple *rectTuple, unsigned int x0, unsigned int y0, unsigned int x1, unsigned y1) {
+//    rectTuple->x0 = x0;
+//    rectTuple->y0 = y0;
+//    rectTuple->x1 = x1;
+//    rectTuple->y1 = y1;
+//}
 
 // Clip a rect, make it in bound.
 void rect_tuple_clip_bound(RectTuple *target, RectTuple *by) {
@@ -43,12 +43,12 @@ void rect_tuple_enlarge_bound(RectTuple *target, RectTuple *by) {
     if (target->y1 < by->y1) target->y1 = by->y1;
 }
 
-void rect_tuple_copy(const RectTuple *source, RectTuple *target) {
-    target->x1 = source->x1;
-    target->y1 = source->y1;
-    target->x0 = source->x0;
-    target->y0 = source->y0;
-}
+//void rect_tuple_copy(const RectTuple *source, RectTuple *target) {
+//    target->x1 = source->x1;
+//    target->y1 = source->y1;
+//    target->x0 = source->x0;
+//    target->y0 = source->y0;
+//}
 
 /*
  * RGB8888 color

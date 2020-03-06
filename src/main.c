@@ -98,9 +98,9 @@ static int protectedMain(lua_State *L) {
     int argc = (int) lua_tointeger(L, 1);
     char **argv = (char **) lua_touserdata(L, 2);
 
-    String *table1 = luaU_dumpStack(L);
-    log_trace("Stack table: \n%s", string_value(table1));
-    string_free(table1);
+//    String *table1 = luaU_dumpStack(L);
+//    log_trace("Stack table: \n%s", string_value(table1));
+//    string_free(table1);
 
     luaL_checkversion(L);
 

@@ -56,8 +56,8 @@ String *luaU_dumpStack(lua_State *L) {
     return string;
 }
 
-void *luaU_checkUserDataNotNull(lua_State *L, const char *typeName) {
-    void *data = luaL_checkudata(L, 1, typeName);
+void *luaU_checkUserDataNotNull(lua_State *L, const char *typeName, int pos) {
+    void *data = luaL_checkudata(L, pos, typeName);
     luaL_argcheck(L, data != NULL, 1, "error: value should not be null");
     return data;
 }

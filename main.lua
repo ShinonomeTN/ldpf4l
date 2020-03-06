@@ -1,85 +1,92 @@
 function printTable(table)
-    for k,v in pairs(table) do
+    for k, v in pairs(table) do
         local s = v or "nil"
-        print(k.." : "..tostring(s))
+        print(k .. " : " .. tostring(s))
     end
 end
 
-function testForceFlush(canvas)
+function testForceFlush(screen, canvas)
     print("Test Canvas clear and force flush..")
-    canvas:setBackground(255,0,0)
+    canvas:setBackground(255, 0, 0, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(0,255,0)
+    screen:draw(canvas)
+
+    canvas:setBackground(0, 255, 0, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(0,0,255)
+    screen:draw(canvas)
+
+    canvas:setBackground(0, 0, 255, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(255,255,0)
+    screen:draw(canvas)
+
+    canvas:setBackground(255, 255, 0, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(0,255,255)
+    screen:draw(canvas)
+
+    canvas:setBackground(0, 255, 255, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(255,0,255)
+    screen:draw(canvas)
+
+    canvas:setBackground(255, 0, 255, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(255,255,255)
+    screen:draw(canvas)
+
+    canvas:setBackground(255, 255, 255, 255)
     canvas:clear()
-    canvas:forceFlush()
-    canvas:setBackground(0,0,0)
+    screen:draw(canvas)
+
+    canvas:setBackground(0, 0, 0, 255)
     canvas:clear()
-    canvas:forceFlush()
+    screen:draw(canvas)
     print("Success")
 end
 
-function testDrawRectAndForceFlush(canvas)
+function testDrawRectAndForceFlush(screen, canvas)
     print("Test draw Rect then force flush")
-    canvas:fillRect(0,0, 239, 239, 100, 100, 250, 128)
-    canvas:fillRect(20,20, 127, 140, 100, 100, 250, 128)
-    canvas:fillRect(50,50, 230, 200, 255, 100, 100, 128)
-    canvas:fillRect(0,180, 180, 320, 100, 255, 100, 128)
-    canvas:fillRect(40,60, 141, 222, 100, 255, 255, 128)
-    canvas:fillRect(0,162, 120, 319, 255, 255, 100, 128)
-    canvas:fillRect(125,0, 239, 319, 255, 100, 255, 128)
+    canvas:fillColor(0, 0, 239, 239, 100, 100, 250, 128)
+    canvas:fillColor(20, 20, 127, 140, 100, 100, 250, 128)
+    canvas:fillColor(50, 50, 230, 200, 255, 100, 100, 128)
+    canvas:fillColor(0, 180, 180, 320, 100, 255, 100, 128)
+    canvas:fillColor(40, 60, 141, 222, 100, 255, 255, 128)
+    canvas:fillColor(0, 162, 120, 319, 255, 255, 100, 128)
+    canvas:fillColor(125, 0, 239, 319, 255, 100, 255, 128)
 
-    canvas:forceFlush()
+    screen:draw(canvas)
     print("Finished")
 end
 
-function testDrawRect(canvas)
+function testDrawRect(screen, canvas)
     print("Test draw Rect")
-    canvas:fillRect(0,(320 // 4), 239, 239, 255, 255, 255, 128)
-    canvas:forceFlush()
+    canvas:fillColor(0, (320 // 4), 239, 239, 255, 255, 255, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(20,20, 127, 140, 100, 100, 250, 128)
-    canvas:flush()
+    canvas:fillColor(20, 20, 127, 140, 100, 100, 250, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(50,50, 230, 200, 255, 100, 100, 128)
-    canvas:flush()
+    canvas:fillColor(50, 50, 230, 200, 255, 100, 100, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(0,180, 180, 320, 100, 255, 100, 128)
-    canvas:flush()
+    canvas:fillColor(0, 180, 180, 320, 100, 255, 100, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(40,60, 141, 222, 100, 255, 255, 128)
-    canvas:flush()
+    canvas:fillColor(40, 60, 141, 222, 100, 255, 255, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(0,162, 120, 319, 255, 255, 100, 128)
-    canvas:flush()
+    canvas:fillColor(0, 162, 120, 319, 255, 255, 100, 128)
+    screen:draw(canvas)
 
-    canvas:fillRect(125,0, 239, 319, 255, 100, 255, 128)
-    canvas:flush()
+    canvas:fillColor(125, 0, 239, 319, 255, 100, 255, 128)
+    screen:draw(canvas)
 
     print("Finished")
 end
 
-function testDrawDots(canvas)
+function testDrawDots(screen, canvas)
     print("Test draw points");
-    for i=0,239 do
-        canvas:setPoint(i, i, 255,255,255,255)
+    for i = 0, 239 do
+        canvas:setPoint(i, i, 255, 255, 255, 128)
     end
-    canvas:flush()
+    screen:draw(canvas)
     print("Finished")
 end
 
@@ -90,19 +97,18 @@ print("Greeting from lua VM!")
 
 print("LibUsb Api Version:")
 local version = UsbExplorer.apiVersion()
--- print(version.major.."."..version.minor.."."..version.micro.."("..version.nano..")")
 print(tostring(version))
 
 print()
 local usbContext = UsbExplorer.newContext()
 
 local devices = usbContext:devices()
-print(#devices.." device(s) found.\n")
+print(#devices .. " device(s) found.\n")
 
 local device
-for _,v in pairs(devices) do
+for _, v in pairs(devices) do
     local info = v:info()
-    if info.idVendor == 6408 and info.idProduct == 258 then
+    if info.idVendor == 0x1908 and info.idProduct == 0x0102 then
         device = v
         break
     end
@@ -121,13 +127,13 @@ if device then
 
     print()
     local interfaces = config:interfaces()
-    for ik,iv in pairs(interfaces) do
-        print("-- Interface ["..ik.."] :")
+    for ik, iv in pairs(interfaces) do
+        print("-- Interface [" .. ik .. "] :")
         printTable(iv)
         print()
 
-        for k,v in pairs(iv.endpointList) do
-            print("-- Interface ["..ik.."] Endpoint ["..k.."] :")
+        for k, v in pairs(iv.endpointList) do
+            print("-- Interface [" .. ik .. "] Endpoint [" .. k .. "] :")
             printTable(v)
             print()
         end
@@ -137,28 +143,30 @@ else
 end
 
 print()
-local dpf = Dpf.openDevice(device)
-if dpf then
-    print("Connected to Dpf device.")
-    local size = dpf:dimensions()
-    print("Screen size:")
-    printTable(size)
-    dpf:setBrightness(1)
-    print("Set brightness to "..dpf:brightness())
-    print("Buffer Size: "..dpf:bufferSize())
-else
-    print("Failed to open Dpf device.")
+
+function useScreen(screen)
+    print("Screen created. driver: \"" .. screen:getDriverName() .. "\"")
+    local screenSize = screen:getSize()
+    print("Dimension  : " .. screenSize.width .. "x" .. screenSize.height)
+    print("Color depth: " .. screen:getColorDepth())
+
+    local canvas = Canvas.new(screenSize.width, screenSize.height);
+    print("Canvas created.")
+    local canvasSize = canvas:getSize()
+    print("Size       : " .. canvasSize.width .. "x" .. canvasSize.height)
+    local background = canvas:getBackground()
+    print("Background : { red=" .. background.red .. ", green=" .. background.green .. ", blue=" .. background.blue .. ",alpha=" .. background.alpha .. " }")
+
+    testForceFlush(screen, canvas)
+    testDrawRectAndForceFlush(screen, canvas)
+    canvas:clear()
+    screen:draw(canvas)
+    testDrawRect(screen, canvas)
+    testDrawDots(screen, canvas)
 end
 
-local canvas = Dpf.openCanvas(dpf)
-print("Canvas created.")
-print("Canvas size: "..canvas:width().."x"..canvas:height())
-testForceFlush(canvas)
-testDrawRectAndForceFlush(canvas)
-canvas:clear()
-canvas:flush()
-testDrawRect(canvas)
-testDrawDots(canvas)
+local screen = Screen.openDpf(device)
 
---canvas:fillRect(0,0,120,120,255,255,255,255)
---canvas:flush()
+if (screen) then
+    useScreen(screen)
+end
