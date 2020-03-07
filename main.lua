@@ -126,7 +126,7 @@ function testDrawImages(screen, canvas)
         print("Image loaded. Size " .. imageSize.width .. "x" .. imageSize.height)
         local imageInfo = image:getInfo()
         print("Color channels: origin " .. imageInfo.channels .. ", opened as " .. imageInfo.requiredChannels)
-        canvas:drawImage(image, 0, 0, false)
+        canvas:drawImage(image, 0, 0, true)
         screen:draw(canvas)
     end
 end
@@ -141,12 +141,32 @@ function testDrawAnimate(screen, canvas)
     local x = (240 / 2) - (32 / 2)
     local y = (320 / 2) - (32 / 2)
 
-    canvas:drawFrame(x - 1, y - 1, x + 32 + 1, y + 32 + 1, 255, 0, 0, 255, 1)
-    screen:draw(canvas);
+    local bound = 32;
 
-    for frame = 1, (totalFrames * 30) do
+    print("Total " .. totalFrames .. " frames.")
+    print("Set an " .. (32 + bound) .. "px width invisible frame to limit frame rate")
+
+    for frame = 1, (totalFrames * 1) do
+        canvas:fillColor(x - bound, y - bound, x + 32 + bound, y + 32 + bound, 0, 0, 0, 255)
+        canvas:drawFrame(x - bound, y - bound, x + 32 + bound, y + 32 + bound, 255, 255, 255, 0, 2)
         local current = frame % totalFrames + 1
         canvas:drawImage(frames[current], x, y, false)
+        screen:draw(canvas)
+    end
+end
+
+function testBadApple(screen, canvas)
+    local screenSize = screen:getSize()
+    local totalFrames = 3069
+    local x = (screenSize.width - 114) // 2
+    local y = (screenSize.height - 86) // 2
+
+    canvas:setBackground(0, 0, 0, 255)
+    canvas:clear()
+
+    for frame = 1, totalFrames do
+        local img = Image.loadFile("/home/cattenlinger/Pictures/bad_apple/f" .. frame .. ".jpg")
+        canvas:drawImage(img, x, y, false)
         screen:draw(canvas)
     end
 end
@@ -210,7 +230,7 @@ function useScreen(screen)
     local screenSize = screen:getSize()
     print("Dimension  : " .. screenSize.width .. "x" .. screenSize.height)
     print("Color depth: " .. screen:getColorDepth())
-    screen:setBackLightLevel(1);
+    screen:setBackLightLevel(7);
 
     local canvas = Canvas.new(screenSize.width, screenSize.height);
     print("Canvas created.")
@@ -237,11 +257,14 @@ function useScreen(screen)
     --canvas:clear()
     --screen:draw(canvas)
     --testDrawImages(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawAnimate(screen, canvas)
     canvas:clear()
     screen:draw(canvas)
-    testDrawAnimate(screen, canvas)
+    testBadApple(screen, canvas)
 
-    screen:setBackLightLevel(7);
+    screen:setBackLightLevel(0);
 end
 
 local screen = Screen.openDpf(device)
