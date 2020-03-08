@@ -4,5 +4,5 @@ cmake-build-debug/
 /*.jpg
 /*.png
 /*.jpeg
-/test_image
+/images
 .DS_Store

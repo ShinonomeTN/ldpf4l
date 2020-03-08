@@ -57,6 +57,8 @@ void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
 void ll_canvas_fill_data(ll_canvas *self, const RectTuple *pictureDimension, const unsigned int *buffer,
                          unsigned char blend);
 
+void ll_canvas_copy_area(ll_canvas *self, const RectTuple *dimension, ll_canvas *sourceCanvas, unsigned char blend);
+
 void ll_canvas_draw_frame(ll_canvas *self, const RectTuple *rect, const Rgba8 *color, int lineWidth);
 
 /*

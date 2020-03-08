@@ -18,6 +18,7 @@
 
 static int _image_load(lua_State *L) {
     const char *filename = lua_tostring(L, 1);
+//    log_trace("Open image file %s ", filename);
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         lua_pushnil(L);

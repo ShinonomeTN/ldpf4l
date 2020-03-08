@@ -132,6 +132,24 @@ static int _canvas_draw_image(lua_State *L) {
     return 0;
 }
 
+static int _canvas_merge(lua_State *L) {
+    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *upper = (ll_canvas *) luaU_checkUserDataNotNull(L, t_CANVAS, 2);
+
+    unsigned char onlyDirtyRect = !lua_toboolean(L, 3);
+    unsigned char isUpperDirty = upper->isDirty;
+    if (onlyDirtyRect && !isUpperDirty) {
+        log_debug("Upper canvas is not dirty, skipped.");
+        return 0;
+    }
+
+    RectTuple *theRect = onlyDirtyRect ? &upper->dirtyRect : &upper->dimension;
+
+    ll_canvas_copy_area(self, theRect, upper, 1);
+
+    return 0;
+}
+
 static int _canvas_draw_frame(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
@@ -212,6 +230,7 @@ LUA_TYPE_MEMBERS(t_CANVAS) {
         {"fillColor",     _canvas_fill_color},
         {"drawFrame",     _canvas_draw_frame},
         {"drawImage",     _canvas_draw_image},
+        {"drawCanvas",    _canvas_merge},
 
         {"getSize",       _canvas_get_size},
 

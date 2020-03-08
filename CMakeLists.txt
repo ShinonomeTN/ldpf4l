@@ -24,6 +24,8 @@ list(APPEND SRC_LIB
         )
 
 list(APPEND SRC_COM
+        src/com/com_layout.h
+        src/com/com_layout.c
         src/com/com_image.h
         src/com/com_image.c
         src/com/com_canvas.h

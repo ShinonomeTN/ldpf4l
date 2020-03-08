@@ -108,20 +108,20 @@ end
 function testDrawImages(screen, canvas)
 
     local images = {
-        "./img1.jpg",
-        "./img2.jpg",
-        "./img3.jpg",
-        "./img4.jpg",
-        "./img5.png",
-        "./img6.png",
-        "./img7.png",
-        "./img8.png",
-        "./img9.jpeg",
+        "img1.jpg",
+        "img2.jpg",
+        "img3.jpg",
+        "img4.jpg",
+        "img5.png",
+        "img6.png",
+        "img7.png",
+        "img8.png",
+        "img9.jpeg",
     }
 
     for _, v in pairs(images) do
         canvas:clear()
-        local image = Image.loadFile(v)
+        local image = Image.loadFile("./images/pics/" .. v)
         local imageSize = image:getSize()
         print("Image loaded. Size " .. imageSize.width .. "x" .. imageSize.height)
         local imageInfo = image:getInfo()
@@ -135,7 +135,7 @@ function testDrawAnimate(screen, canvas)
     local totalFrames = (87 - 30)
     local frames = {};
     for frame = 1, totalFrames do
-        frames[frame] = Image.loadFile("./test_image/00" .. frame + 29 .. ".png")
+        frames[frame] = Image.loadFile("./images/animate/00" .. frame + 29 .. ".png")
     end
 
     local x = (240 / 2) - (32 / 2)
@@ -153,6 +153,39 @@ function testDrawAnimate(screen, canvas)
         canvas:drawImage(frames[current], x, y, false)
         screen:draw(canvas)
     end
+end
+
+function testCanvasCopy(screen, canvas)
+    local screenSize = screen:getSize()
+    local layer1 = Canvas.new(screenSize.width, screenSize.height);
+    local layer2 = Canvas.new(screenSize.width, screenSize.height);
+
+    layer1:fillColor(0, 180, 180, 320, 100, 255, 100, 128)
+    layer2:fillColor(40, 60, 141, 222, 100, 255, 255, 50)
+
+    print("Compose all layer in order")
+    canvas:clear()
+    canvas:drawCanvas(layer1, true)
+    canvas:drawCanvas(layer2, true)
+    screen:draw(canvas);
+    print("Compose all layer reversed order")
+    canvas:clear()
+    canvas:drawCanvas(layer1, true)
+    canvas:drawCanvas(layer2, true)
+    screen:draw(canvas);
+    print("Only layer 1")
+    canvas:clear()
+    canvas:drawCanvas(layer1, true)
+    screen:draw(canvas);
+    print("Only layer 2")
+    canvas:clear()
+    canvas:drawCanvas(layer2, true)
+    screen:draw(canvas);
+
+end
+
+function testComposing(screen, canvas)
+
 end
 
 function testBadApple(screen, canvas)
@@ -239,27 +272,34 @@ function useScreen(screen)
     local background = canvas:getBackground()
     print("Background : { red=" .. background.red .. ", green=" .. background.green .. ", blue=" .. background.blue .. ",alpha=" .. background.alpha .. " }")
 
-    canvas:clear()
-    screen:draw(canvas)
-    testForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRectAndForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRect(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawDots(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawFrame(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRectAndForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRect(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawDots(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawFrame(screen, canvas)
     --canvas:clear()
     --screen:draw(canvas)
     --testDrawImages(screen, canvas)
     --canvas:clear()
     --screen:draw(canvas)
     --testDrawAnimate(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testCanvasCopy(screen, canvas)
+    canvas:clear()
+    screen:draw(canvas)
+    testComposing(screen, canvas)
+
     --canvas:clear()
     --screen:draw(canvas)
     --testBadApple(screen, canvas)

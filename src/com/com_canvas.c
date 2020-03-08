@@ -113,6 +113,44 @@ void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
     _report_dirty_rect(self, &area);
 }
 
+void ll_canvas_copy_area(ll_canvas *self,
+                         const RectTuple *dimension,
+                         ll_canvas *sourceCanvas,
+                         const unsigned char blend) {
+    RectTuple area;
+    rect_tuple_copy(dimension, &area);
+    rect_tuple_clip_bound(&area, &sourceCanvas->dimension);
+    rect_tuple_clip_bound(&area, &self->dimension);
+
+    int areaWidth = rect_tuple_width(&area);
+    int areaHeight = rect_tuple_height(&area);
+
+    const int sourceWidth = sourceCanvas->width;
+    const int canvasWidth = self->width;
+
+    Rgba8 bottom;
+    Rgba8 top;
+    for (int iY = 0; iY < areaHeight; iY++) {
+        const int sourceY = (iY + area.y0) * sourceWidth;
+        const int canvasY = (iY + area.y0) * canvasWidth;
+        for (int iX = 0; iX < areaWidth; iX++) {
+            unsigned int *sourcePos = &sourceCanvas->buffer[(iX + area.x0) + sourceY];
+            unsigned int *canvasPos = &self->buffer[(iX + area.x0) + canvasY];
+
+            rgba_8_from_int(&top, *sourcePos);
+            if (blend) {
+                rgba_8_from_int(&bottom, *canvasPos);
+                rgba_8_on_color(&bottom, &top);
+                *canvasPos = rgba_8_to_int(&bottom);
+            } else {
+                *canvasPos = rgba_8_to_int(&top);
+            }
+        }
+    }
+
+    _report_dirty_rect(self, &area);
+}
+
 void ll_canvas_fill_data(ll_canvas *self,
                          const RectTuple *pictureDimension,
                          const unsigned int *buffer,
@@ -144,7 +182,6 @@ void ll_canvas_fill_data(ll_canvas *self,
 //            rgba_8_from_int(&colorTop, buffer[bufferPos]);
             if (blend) {
                 rgba_8_from_int(&colorBack, canvas[canvasPos]);
-
                 rgba_8_on_color(&colorBack, &colorTop);
                 canvas[canvasPos] = rgba_8_to_int(&colorBack);
             } else {
