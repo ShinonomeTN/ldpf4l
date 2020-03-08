@@ -54,29 +54,30 @@ void rect_tuple_enlarge_bound(RectTuple *target, RectTuple *by) {
  * RGB8888 color
  * */
 
-unsigned short rgba_8_to_rgb_565(Rgba8 *color) {
-//    return ((color->red & 0xF8U) << 8U) + ((color->green & 0xFCU) << 3U) + ((color->blue & 0xF8U) >> 3U);
-    return (((((color->red) & 0xf8U)) | (((color->green) & 0xe0U) >> 5U)) << 8U) |
-           ((((color->green) & 0x1cU) << 3U) | (((color->blue) & 0xf8U) >> 3U));
-}
+//unsigned short rgba_8_to_rgb_565(Rgba8 *color) {
+//return ((color->red & 0xF8U) << 8U) + ((color->green & 0xFCU) << 3U) + ((color->blue & 0xF8U) >> 3U);
+//}
 
 /*
 #define TO_RGB565_H(color) ((((color.red) & 0xf8U)) | (((color.green) & 0xe0U) >> 5U))
 #define TO_RGB565_L(color) ((((color.green) & 0x1cU) << 3U) | (((color.blue) & 0xf8U) >> 3U))
-*/
+
 unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color) {
-//    unsigned char data[2] = {
-//            ((color->red) & 0xf8U) | (color->green & 0xe0U) >> 5U,
-//            ((color->green & 0x1cU) << 3U) | ((color->blue & 0xf8U) >> 3U),
-//    };
-//    return ((unsigned short *) data)[0];
-    return
-            ((((color->green & 0x1cU) << 3U) | ((color->blue & 0xf8U) >> 3U)) << 8U)
-            | (((color->red) & 0xf8U)
-               | (color->green & 0xe0U) >> 5U);
+     unsigned char data[2] = {
+            ((color->red) & 0xf8U) | (color->green & 0xe0U) >> 5U,
+            ((color->green & 0x1cU) << 3U) | ((color->blue & 0xf8U) >> 3U),
+    };
+    return ((unsigned short *) data)[0];
 }
+*/
+
+//unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color) {
+//    return ((((color->green & 0x1cU) << 3U) | ((color->blue & 0xf8U) >> 3U)) << 8U) | (((color->red) & 0xf8U) | (color->green & 0xe0U) >> 5U);
+//}
 
 unsigned int rgba_8_to_int(Rgba8 *color) {
+//    unsigned int* c = (unsigned int *) color;
+//    return *c;
     return (color->red << 24U) + (color->green << 16U) + (color->blue << 8U) + (color->alpha);
 }
 
@@ -87,12 +88,12 @@ void rgba_8_from_int(Rgba8 *color, const unsigned int rgba) {
     color->alpha = rgba & 0x000000FFU;
 }
 
-void rgba8_from_int_abgr(Rgba8 *color, const unsigned int argb) {
-    color->alpha = argb >> 24U;
-    color->blue = (argb & 0x00FF0000U) >> 16U;
-    color->green = (argb & 0x0000FF00U) >> 8U;
-    color->red = argb & 0x000000FFU;
-}
+//void rgba8_from_int_abgr(Rgba8 *color, const unsigned int argb) {
+//    color->red = argb & 0x000000FFU;
+//    color->green = (argb & 0x0000FF00U) >> 8U;
+//    color->blue = (argb & 0x00FF0000U) >> 16U;
+//    color->alpha = argb >> 24U;
+//}
 
 void rgba_8_on_color(Rgba8 *color, const Rgba8 *anotherColor) {
     // Just the blending formula

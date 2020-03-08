@@ -71,15 +71,20 @@ unsigned int rgba_8_to_int(Rgba8 *color);
 
 void rgba_8_from_int(Rgba8 *color, unsigned int rgba);
 
-void rgba8_from_int_abgr(Rgba8 *color, const unsigned int argb);
+#define rgba8_from_int_abgr(/*(Rgba8 *)*/color, /*(unsigned int)*/ argb) (*(unsigned int *) color = argb)
+//void rgba8_from_int_abgr(Rgba8 *color, unsigned int argb);
 
 void rgba_8_on_color(Rgba8 *color, const Rgba8 *anotherColor);
 
 void rgba_8_apply_alpha(Rgba8 *color, Rgba8 *backgroundColor);
 
-unsigned short rgba_8_to_rgb_565(Rgba8 *color);
+//unsigned short rgba_8_to_rgb_565(Rgba8 *color);
+#define rgba_8_to_rgb_565(color) \
+((unsigned short) (((color)->red & 0xF8U) << 8U) + (((color)->green & 0xFCU) << 3U) + (((color)->blue & 0xF8U) >> 3U))
 
-unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color);
+//unsigned short rgba_8_to_rgb_565_reverse(Rgba8 *color);
+#define rgba_8_to_rgb_565_reverse(color) \
+((unsigned short) (((((color)->green & 0x1cU) << 3U) | (((color)->blue & 0xf8U) >> 3U)) << 8U) | ((((color)->red) & 0xf8U) | ((color)->green & 0xe0U) >> 5U) )
 
 #define TO_RGB565_H(color) ((((color.red) & 0xf8U)) | (((color.green) & 0xe0U) >> 5U))
 #define TO_RGB565_L(color) ((((color.green) & 0x1cU) << 3U) | (((color.blue) & 0xf8U) >> 3U))
