@@ -145,7 +145,31 @@ static int _canvas_merge(lua_State *L) {
 
     RectTuple *theRect = onlyDirtyRect ? &upper->dirtyRect : &upper->dimension;
 
-    ll_canvas_copy_area(self, theRect, upper, 1);
+    ll_canvas_copy(self, theRect, upper, 1);
+
+    return 0;
+}
+
+static int _canvas_area_copy(lua_State *L) {
+    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+
+    PointTuple point = {
+            luaL_checkinteger(L, 2),
+            luaL_checkinteger(L, 3)
+    };
+
+    ll_canvas *another = (ll_canvas *) luaU_checkUserDataNotNull(L, t_CANVAS, 4);
+
+    RectTuple areaSource = {
+            luaL_checkinteger(L, 5),
+            luaL_checkinteger(L, 6),
+            luaL_checkinteger(L, 7),
+            luaL_checkinteger(L, 8)
+    };
+
+    unsigned char blend = lua_toboolean(L, 9);
+
+    ll_canvas_copy_area(self, &point, another, &areaSource, blend);
 
     return 0;
 }
@@ -231,6 +255,7 @@ LUA_TYPE_MEMBERS(t_CANVAS) {
         {"drawFrame",     _canvas_draw_frame},
         {"drawImage",     _canvas_draw_image},
         {"drawCanvas",    _canvas_merge},
+        {"copyArea",      _canvas_area_copy},
 
         {"getSize",       _canvas_get_size},
 

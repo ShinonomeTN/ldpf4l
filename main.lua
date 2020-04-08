@@ -190,7 +190,11 @@ end
 
 function testBadApple(screen, canvas)
     local screenSize = screen:getSize()
-    local totalFrames = 3069
+    --local totalFrames = 1822
+    --local x = (screenSize.width - 98) // 2
+    --local y = (screenSize.height - 98) // 2
+
+    local totalFrames = 3068
     local x = (screenSize.width - 114) // 2
     local y = (screenSize.height - 86) // 2
 
@@ -198,9 +202,12 @@ function testBadApple(screen, canvas)
     canvas:clear()
 
     for frame = 1, totalFrames do
-        local img = Image.loadFile("/home/cattenlinger/Pictures/bad_apple/f" .. frame .. ".jpg")
+        local img = Image.loadFile("./images/bad_apple/f" .. frame .. ".jpg")
+        --local img = Image.loadFile("./images/daisuke/f" .. frame .. ".jpg")
         canvas:drawImage(img, x, y, false)
         screen:draw(canvas)
+        --io.write("frame[" .. frame .. "]\r")
+        --io.flush()
     end
 end
 
@@ -296,13 +303,13 @@ function useScreen(screen)
     --canvas:clear()
     --screen:draw(canvas)
     --testCanvasCopy(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testComposing(screen, canvas)
-
     --canvas:clear()
     --screen:draw(canvas)
-    --testBadApple(screen, canvas)
+    --testComposing(screen, canvas)
+
+    canvas:clear()
+    screen:draw(canvas)
+    testBadApple(screen, canvas)
 
     --screen:setBackLightLevel(0);
 end
