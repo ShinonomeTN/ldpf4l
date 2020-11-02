@@ -2,9 +2,6 @@
 // Created by cattenlinger on 20-3-4.
 //
 
-#include <stdlib.h>
-
-#include "lprefix.h"
 #include "lauxlib.h"
 #include "lualib.h"
 

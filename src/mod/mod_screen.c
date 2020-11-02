@@ -4,7 +4,6 @@
 
 #define LUA_LIB
 
-#include "lprefix.h"
 #include "lauxlib.h"
 #include "lualib.h"
 

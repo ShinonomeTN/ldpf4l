@@ -2,19 +2,17 @@ cmake_minimum_required(VERSION 3.13)
 project(ldpf4l)
 set(CMAKE_C_STANDARD 11)
 
-#[[ Libusb ]]
+
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(Lua53 REQUIRED lua-5.3)
+
+#[[ Libusb ]]
 pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 
-#[[ Lua 5.3 , named "lua_static" ]]
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/lua-5.3.3)
-
-#[[ Find all source files ]]
-#file(GLOB_RECURSE SRC src/*.c src/*.h)
+include_directories(/usr/local/include ${Lua53_INCLUDE_DIRS} ${LIBUSB_INCLUDE_DIRS})
 
 #[[ Main entry files ]]
 list(APPEND SRC_MAIN
-        src/main.c
         src/lua_function_register.h
         src/lua_function_register.c
         )
@@ -88,11 +86,16 @@ add_compile_definitions(
         STBI_NO_SIMD
 )
 
-add_executable(ldpf4l ${SRC_MAIN} ${SRC_LIB} ${SRC_COM} ${SRC_MOD} ${SRC_UTILS} ${SRC_DPF_DRIVER})
+add_library(
+        ldpf4l
+        MODULE
+        ${SRC_MAIN}
+        ${SRC_UTILS}
+        ${SRC_LIB}
+        ${SRC_COM} ${SRC_MOD} ${SRC_DPF_DRIVER}
+)
 
-#target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/liblua.a -lm)
-# -lm for quick-fixing the compile problem
-target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES} lua_static -lm)
+set_target_properties(ldpf4l PROPERTIES PREFIX "")
+target_compile_options(ldpf4l PUBLIC ${LIBUSB_CFLAGS_OTHER} ${Lua53_CFLAGS_OTHER})
 
-target_include_directories(ldpf4l PUBLIC ${LIBUSB_INCLUDE_DIRS})
-target_compile_options(ldpf4l PUBLIC ${LIBUSB_CFLAGS_OTHER})
+target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES})

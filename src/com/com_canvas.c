@@ -116,10 +116,10 @@ void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
 void ll_canvas_copy_area(ll_canvas *self, const PointTuple *point, ll_canvas *source, const RectTuple *copyArea,
                          const unsigned char blend) {
     RectTuple destArea = {
-            point->x,
-            point->y,
-            0,
-            0
+           .x0 = point->x,
+           .y0= point->y,
+           .x1 = 0,
+           .y1 = 0
     };
     RectTuple srcArea;
     rect_tuple_copy(copyArea, &srcArea);

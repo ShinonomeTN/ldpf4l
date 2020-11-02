@@ -3,7 +3,6 @@
 //
 #include <stdio.h>
 
-#include "lprefix.h"
 #include "lauxlib.h"
 #include "lualib.h"
 

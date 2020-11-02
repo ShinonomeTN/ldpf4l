@@ -4,9 +4,7 @@
 
 #include "mod_canvas.h"
 
-#include "lprefix.h"
 #include "lauxlib.h"
-#include "lualib.h"
 
 #include "../utils/lua_utils.h"
 

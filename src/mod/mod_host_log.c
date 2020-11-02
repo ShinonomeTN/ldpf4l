@@ -4,13 +4,9 @@
 
 #define LUA_LIB
 
-#include <stdlib.h>
-
 #include "mod_host_log.h"
 
-#include "lprefix.h"
 #include "lauxlib.h"
-#include "lualib.h"
 
 #include "../utils/log.h"
 

@@ -4,10 +4,7 @@
 
 #include "lua_function_register.h"
 
-#include "lprefix.h"
-
 #include "lua.h"
-#include "lualib.h"
 #include "lauxlib.h"
 
 #include "mod/mod_host_log.h"
@@ -31,7 +28,7 @@ static const luaL_Reg loadedExternalLibs[] = {
         {NULL, NULL}
 };
 
-LUALIB_API void luaL_openExtraLibs(lua_State *L) {
+LUALIB_API void luaopen_ldpf4l(lua_State *L) {
     const luaL_Reg *lib;
     /* "require" functions from 'loadedlibs' and set results to global table */
     for (lib = loadedExternalLibs; lib->func; lib++) {

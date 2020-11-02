@@ -5,8 +5,8 @@
 #ifndef LUA_TEST_LUA_FUNCTION_REGISTER_H
 #define LUA_TEST_LUA_FUNCTION_REGISTER_H
 
-#include "lua.h"
+#include <lua.h>
 
-LUALIB_API void (luaL_openExtraLibs) (lua_State *L);
+LUALIB_API void luaopen_ldpf4l (lua_State *L);
 
 #endif //LUA_TEST_LUA_FUNCTION_REGISTER_H
