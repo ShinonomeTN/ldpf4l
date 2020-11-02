@@ -22,6 +22,7 @@ static int _image_load(lua_State *L) {
     if (file == NULL) {
         lua_pushnil(L);
         lua_pushstring(L, "error: could not open file");
+        return 2;
     }
     ll_image *image = (ll_image *) lua_newuserdata(L, sizeof(ll_image));
 

@@ -10,6 +10,16 @@
 
 #include "../utils/log.h"
 
+static int luaM_setLogLevel(lua_State *L) {
+    int n = luaL_checkinteger(L, 1);
+    if(n < 0 || n >= 6) {
+
+    }
+
+    log_set_level(n);
+    return 0;
+}
+
 static int luaM_logLevel(lua_State *L) {
     int logLevel = log_get_level();
     lua_pushnumber(L, logLevel);

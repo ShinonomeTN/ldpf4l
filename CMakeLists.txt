@@ -56,8 +56,6 @@ list(APPEND SRC_UTILS
         src/utils/log.c
         src/utils/lua_utils.h
         src/utils/lua_utils.c
-        src/utils/string_wrapper.h
-        src/utils/string_wrapper.c
         src/utils/common_types.h
         src/utils/common_types.c
         )

@@ -5,8 +5,6 @@
 #ifndef LUA_TEST_LUA_UTILS_H
 #define LUA_TEST_LUA_UTILS_H
 
-#include "string_wrapper.h"
-
 #define luaU_checkoutSelf(L, typeName) luaU_checkUserDataNotNull(L, typeName, 1)
 
 #define LUA_LIB_FUNCTION(name) \
@@ -45,10 +43,6 @@ static const struct luaL_Reg name##_method[] =
     vStatement;\
     lua_settable(L, -3);\
 }while(0)
-
-String *luaU_dumpStack(lua_State *L);
-
-void luaU_printStack(lua_State *L);
 
 void *luaU_checkUserDataNotNull(lua_State *L, const char *typeName, int pos);
 
