@@ -7,12 +7,12 @@
 
 #include "lua.h"
 
+#include "../utils/lua_utils.h"
+
 #define LUA_USB_EXPLORER_NAME "UsbExplorer"
 
-const static char *MOD_t_USB_DEVICE = "t_LibUsbDevice";
+const static char *MOD_t_USB_DEVICE = "ldpf4l.type.LibUsbDevice";
 
-const static char *MOD_t_USB_CONTEXT = "t_LibUsbContext";
-
-LUAMOD_API int (luaopen_usb_explorer)(lua_State *L);
+LUA_LIB_EXPORT_DEFINE(ldpf4l_UsbExplorer)
 
 #endif //LDPF4L_MOD_USB_EXPLORER_H

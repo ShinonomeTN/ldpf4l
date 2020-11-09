@@ -6,11 +6,10 @@
 #define LDPF4L_MOD_CANVAS_H
 
 #include "lua.h"
+#include "../utils/lua_utils.h"
 
-static const char *MOD_t_CANVAS = "t_Canvas";
+static const char *MOD_t_CANVAS = "ldpf4l.type.Canvas";
 
-#define LUA_CANVAS_NAME "Canvas"
-
-LUAMOD_API int (luaopen_canvas)(lua_State *L);
+LUA_LIB_EXPORT_DEFINE(ldpf4l_Canvas)
 
 #endif //LDPF4L_MOD_CANVAS_H

@@ -2,13 +2,10 @@
 // Created by cattenlinger on 20-2-28.
 //
 
-#define LUA_LIB
-
 #include "lauxlib.h"
 #include "lualib.h"
 
 #include "mod_num_array.h"
-#include "../utils/lua_utils.h"
 
 
 #define NA_OUT_OF_RANGE "index out of boundary"
@@ -17,7 +14,8 @@ typedef struct number_array {
     long size;
     double values[1];
 } number_array;
-#define _LUA_TYPE_NAME "LuaBook.NumberArray"
+
+#define t_NumberArray "ldpf4l.type.LuaBookNumberArray"
 
 /*
  *
@@ -31,13 +29,13 @@ static int _lua_new(lua_State *L) {
     array->size = n;
 
     // Give this user data a type info
-    luaL_setmetatable(L, _LUA_TYPE_NAME);
+    luaL_setmetatable(L, t_NumberArray);
 
     return 1;
 }
 
 static int _lua_set(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
     int index = luaL_checkinteger(L, 2);
     double value = luaL_checknumber(L, 3);
 
@@ -48,7 +46,7 @@ static int _lua_set(lua_State *L) {
 }
 
 static int _lua_get(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
     int index = luaL_checkinteger(L, 2);
 
     luaL_argcheck(L, 1 <= index && index <= array->size, 2, NA_OUT_OF_RANGE);
@@ -59,16 +57,16 @@ static int _lua_get(lua_State *L) {
 }
 
 static int _lua_get_size(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
 
     lua_pushnumber(L, array->size);
     return 1;
 }
 
 static int _lua_to_string(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, _LUA_TYPE_NAME);
+    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
 
-    lua_pushfstring(L, _LUA_TYPE_NAME"[%d]", array->size);
+    lua_pushfstring(L, t_NumberArray"[%d]", array->size);
 
     return 1;
 }
@@ -79,10 +77,9 @@ static int _lua_to_string(lua_State *L) {
  *
  * */
 
-static const struct luaL_Reg num_array_Function[] = {
-        {"new", _lua_new},
-        {NULL, NULL}
-};
+LUA_LIB_DEFINE(ldpf4l_NumberArray)
+        FUNCTION("new", _lua_new)
+LUA_LIB_END
 
 /*
  *
@@ -90,27 +87,19 @@ static const struct luaL_Reg num_array_Function[] = {
  *
  * */
 
-static const struct luaL_Reg num_array_Method[] = {
-        {"__newindex", _lua_set},
-        {"__index",    _lua_get},
-        {"__len",      _lua_get_size},
-        {"__tostring", _lua_to_string},
-        {NULL, NULL}
-};
+LUA_TYPE_DEFINE(t_NumberArray)
+    MEMBER("__newindex", _lua_set)
+    MEMBER("__index",    _lua_get)
+    MEMBER("__len",      _lua_get_size)
+    MEMBER("__tostring", _lua_to_string)
+LUA_TYPE_END
 
 /*
  *
  * register
  *
  * */
-LUAMOD_API int luaopen_number_array(lua_State *L) {
-    /* Register type */
-    luaL_newmetatable(L, _LUA_TYPE_NAME);
-    lua_pushvalue(L, -1);
-    lua_setfield(L, -2, "__index");
-    luaL_setfuncs(L, num_array_Method, 0);
-
-    /* Register function */
-    luaL_newlib(L, num_array_Function);
-    return 1;
-}
+LUA_LIB_EXPORT(ldpf4l_NumberArray)
+    EXPORT_LIB(ldpf4l_NumberArray)
+    EXPORT_TYPE(t_NumberArray)
+LUA_LIB_EXPORT_END

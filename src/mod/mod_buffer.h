@@ -9,10 +9,6 @@
 
 struct Buffer;
 
-static const char *MOD_t_BUFFER = "t_Buffer";
-
-#define LUA_BUFFER_NAME "Buffer"
-
-LUAMOD_API int (luaopen_buffer)(lua_State *L);
+LUA_LIB_EXPORT_DEFINE(ldpf4l_Buffer)
 
 #endif //LDPF4L_MOD_BUFFER_H

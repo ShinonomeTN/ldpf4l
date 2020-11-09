@@ -11,12 +11,6 @@ pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 
 include_directories(/usr/local/include ${Lua53_INCLUDE_DIRS} ${LIBUSB_INCLUDE_DIRS})
 
-#[[ Main entry files ]]
-list(APPEND SRC_MAIN
-        src/lua_function_register.h
-        src/lua_function_register.c
-        )
-
 list(APPEND SRC_LIB
         src/lib/stb_image.h
         )
@@ -83,7 +77,6 @@ add_compile_definitions(
 add_library(
         ldpf4l
         MODULE
-        ${SRC_MAIN}
         ${SRC_UTILS}
         ${SRC_LIB}
         ${SRC_COM} ${SRC_MOD} ${SRC_DPF_DRIVER}

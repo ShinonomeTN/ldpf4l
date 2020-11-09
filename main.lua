@@ -1,4 +1,10 @@
-require "ldpf4l"
+Canvas = require "ldpf4l.Canvas"
+UsbExplorer = require "ldpf4l.UsbExplorer"
+Screen = require "ldpf4l.Screen"
+Image = require "ldpf4l.Image"
+log = require "ldpf4l.Logging"
+
+log.setLevel(2)
 
 function printTable(table)
     for k, v in pairs(table) do
@@ -170,16 +176,16 @@ function testCanvasCopy(screen, canvas)
     canvas:drawCanvas(layer1, true)
     canvas:drawCanvas(layer2, true)
     screen:draw(canvas);
-    print("Compose all layer reversed order")
+    print("Compose all layer in reversed order")
     canvas:clear()
     canvas:drawCanvas(layer1, true)
     canvas:drawCanvas(layer2, true)
     screen:draw(canvas);
-    print("Only layer 1")
+    print("Only show layer 1")
     canvas:clear()
     canvas:drawCanvas(layer1, true)
     screen:draw(canvas);
-    print("Only layer 2")
+    print("Only show layer 2")
     canvas:clear()
     canvas:drawCanvas(layer2, true)
     screen:draw(canvas);
@@ -192,20 +198,19 @@ end
 
 function testBadApple(screen, canvas)
     local screenSize = screen:getSize()
-    --local totalFrames = 1822
-    --local x = (screenSize.width - 98) // 2
-    --local y = (screenSize.height - 98) // 2
-
-    local totalFrames = 3068
-    local x = (screenSize.width - 114) // 2
-    local y = (screenSize.height - 86) // 2
+    local totalFrames = 1822
+    local x = (screenSize.width - 98) // 2
+    local y = (screenSize.height - 98) // 2
+    --local totalFrames = 3068
+    --local x = (screenSize.width - 114) // 2
+    --local y = (screenSize.height - 86) // 2
 
     canvas:setBackground(0, 0, 0, 255)
     canvas:clear()
 
     for frame = 1, totalFrames do
-        local img = Image.loadFile("../images/bad_apple/f" .. frame .. ".jpg")
-        --local img = Image.loadFile("./images/daisuke/f" .. frame .. ".jpg")
+        --local img = Image.loadFile("../images/bad_apple/f" .. frame .. ".jpg")
+        local img = Image.loadFile("../images/daisuke/f" .. frame .. ".jpg")
         canvas:drawImage(img, x, y, false)
         screen:draw(canvas)
         --io.write("frame[" .. frame .. "]\r")
@@ -281,33 +286,33 @@ function useScreen(screen)
     local background = canvas:getBackground()
     print("Background : { red=" .. background.red .. ", green=" .. background.green .. ", blue=" .. background.blue .. ",alpha=" .. background.alpha .. " }")
 
-    canvas:clear()
-    screen:draw(canvas)
-    testForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRectAndForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRect(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawDots(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawFrame(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawImages(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawAnimate(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testCanvasCopy(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testComposing(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRectAndForceFlush(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawRect(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawDots(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawFrame(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawImages(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testDrawAnimate(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testCanvasCopy(screen, canvas)
+    --canvas:clear()
+    --screen:draw(canvas)
+    --testComposing(screen, canvas)
 
     canvas:clear()
     screen:draw(canvas)

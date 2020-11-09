@@ -6,11 +6,8 @@
 #define LDPF4L_MOD_SCREEN_H
 
 #include "lua.h"
+#include "../utils/lua_utils.h"
 
-const static char *MOD_t_SCREEN = "t_Screen";
-
-#define LUA_SCREEN_NAME "Screen"
-
-LUAMOD_API int (luaopen_screen)(lua_State *L);
+LUA_LIB_EXPORT_DEFINE(ldpf4l_Screen)
 
 #endif //LDPF4L_MOD_SCREEN_H

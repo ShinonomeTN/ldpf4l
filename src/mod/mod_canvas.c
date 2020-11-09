@@ -14,7 +14,7 @@
 
 #include "mod_image.h"
 
-#define t_CANVAS "t_Canvas"
+#define t_CANVAS "ldpf4l.type.Canvas"
 
 static int _canvas_create(lua_State *L) {
     unsigned int width = luaL_checkinteger(L, 1);
@@ -241,36 +241,32 @@ static int _canvas_set_background(lua_State *L) {
     return 0;
 }
 
-LUA_TYPE_MEMBERS(t_CANVAS) {
-        {"__gc",          _canvas_gc},
+LUA_TYPE_DEFINE(t_CANVAS)
+    MEMBER("__gc",          _canvas_gc)
 
-        {"clear",         _canvas_clear},
-        {"getDirtyRect",  _canvas_get_dirty_rect},
-        {"isDirty",       _canvas_get_is_dirty},
+    MEMBER("clear",         _canvas_clear)
+    MEMBER("getDirtyRect",  _canvas_get_dirty_rect)
+    MEMBER("isDirty",       _canvas_get_is_dirty)
 
-        {"setPoint",      _canvas_set_point},
-        {"fillColor",     _canvas_fill_color},
-        {"drawFrame",     _canvas_draw_frame},
-        {"drawImage",     _canvas_draw_image},
-        {"drawCanvas",    _canvas_merge},
-        {"copyArea",      _canvas_area_copy},
+    MEMBER("setPoint",      _canvas_set_point)
+    MEMBER("fillColor",     _canvas_fill_color)
+    MEMBER("drawFrame",     _canvas_draw_frame)
+    MEMBER("drawImage",     _canvas_draw_image)
+    MEMBER("drawCanvas",    _canvas_merge)
+    MEMBER("copyArea",      _canvas_area_copy)
 
-        {"getSize",       _canvas_get_size},
+    MEMBER("getSize",       _canvas_get_size)
 
-        {"setBackground", _canvas_set_background},
-        {"getBackground", _canvas_get_background},
+    MEMBER("setBackground", _canvas_set_background)
+    MEMBER("getBackground", _canvas_get_background)
+LUA_TYPE_END
 
-        {NULL, NULL}
-};
+LUA_LIB_DEFINE(ldpf4l_Canvas)
+    FUNCTION("new", _canvas_create)
+LUA_LIB_END
 
-LUA_LIB_FUNCTION(t_CANVAS) {
-        {"new", _canvas_create},
-        {NULL, NULL}
-};
+LUA_LIB_EXPORT(ldpf4l_Canvas)
+    EXPORT_TYPE(t_CANVAS)
 
-LUAMOD_API int luaopen_canvas(lua_State *L) {
-    luaU_registerType(L, t_CANVAS);
-
-    luaL_newlib(L, t_CANVAS_function);
-    return 1;
-}
+    EXPORT_LIB(ldpf4l_Canvas)
+LUA_LIB_EXPORT_END

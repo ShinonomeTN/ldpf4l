@@ -7,7 +7,8 @@
 
 #include "lua.h"
 
-#define LUA_HOST_LOGGER_NAME "log"
-LUAMOD_API int (luaopen_log)(lua_State *L);
+#include "../utils/lua_utils.h"
+
+LUA_LIB_EXPORT_DEFINE(ldpf4l_Logging)
 
 #endif //LUA_TEST_MOD_HOST_LOG_H
