@@ -7,7 +7,12 @@
 #include "../lib/stb_image.h"
 
 int ll_image_load(ll_image *self, FILE *file, const int requiredChannel) {
-    self->data = stbi_load_from_file(file, &(self->width), &(self->height), &(self->channels), requiredChannel);
+    self->data = stbi_load_from_file(
+            file,
+            &(self->width), &(self->height), &(self->channels),
+            requiredChannel
+    );
+
     if (self->data == NULL) return 1;
     self->requiredChannel = requiredChannel;
     return 0;

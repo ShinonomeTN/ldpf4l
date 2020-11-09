@@ -5,6 +5,10 @@
 #ifndef DPF_DISPLAY_COMMON_TYPES_H
 #define DPF_DISPLAY_COMMON_TYPES_H
 
+typedef unsigned int uint;
+typedef unsigned long ulong;
+typedef unsigned char byte;
+
 /*
  *
  * Dimension

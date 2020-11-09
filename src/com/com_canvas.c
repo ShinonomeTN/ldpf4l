@@ -8,21 +8,21 @@
 
 #include "com_canvas.h"
 
-void _report_dirty_rect(ll_canvas *self, RectTuple *drawRect) {
+void report_dirty_rect(ll_canvas *self, RectTuple *drawRect) {
     if (self->isDirty) rect_tuple_enlarge_bound(&(self->dirtyRect), drawRect);
     else
         rect_tuple_copy(drawRect, &self->dirtyRect);
     self->isDirty = 1;
 }
 
-#define _clear_dirty_flag(self) (self->isDirty = 0)
+#define clear_dirty_flag(self) (self->isDirty = 0)
 
 int ll_canvas_create(ll_canvas *self, int width, int height) {
 
     self->width = width;
     self->height = height;
 
-    const unsigned long size = width * height;
+    const ulong size = width * height;
 
     unsigned int *buffer = (unsigned int *) malloc(sizeof(unsigned int) * size);
     if (buffer == NULL) {
@@ -39,7 +39,7 @@ int ll_canvas_create(ll_canvas *self, int width, int height) {
     self->background.alpha = 0;
 
     rect_tuple_set(&self->dimension, 0, 0, width - 1, height - 1);
-    _clear_dirty_flag(self);
+    clear_dirty_flag(self);
 
     return 0;
 }
@@ -51,12 +51,12 @@ void ll_canvas_destroy(ll_canvas *self) {
 }
 
 void ll_canvas_clear(ll_canvas *self) {
-    unsigned int color = rgba_8_to_int(&self->background);
+    uint color = rgba_8_to_int(&self->background);
 
-    for (unsigned long i = 0; i < self->bufferSize; ++i) {
+    for (ulong i = 0; i < self->bufferSize; ++i) {
         self->buffer[i] = color;
     }
-    _report_dirty_rect(self, &self->dimension);
+    report_dirty_rect(self, &self->dimension);
 }
 
 unsigned char ll_canvas_is_dirty(ll_canvas *self) {
@@ -74,7 +74,7 @@ const RectTuple *ll_canvas_get_dirty_rect(ll_canvas *self) {
 void ll_canvas_set_point(ll_canvas *self, const PointTuple *point, const Rgba8 *color) {
     if (point->x > self->dimension.x1 || point->y > self->dimension.y1) return;
 
-    unsigned long pos = point->y * self->width + point->x;
+    ulong pos = point->y * self->width + point->x;
 
     Rgba8 originColor;
     rgba_8_from_int(&originColor, self->buffer[pos]);
@@ -85,7 +85,7 @@ void ll_canvas_set_point(ll_canvas *self, const PointTuple *point, const Rgba8 *
             point->x, point->y, point->x, point->y
     };
 
-    _report_dirty_rect(self, &area);
+    report_dirty_rect(self, &area);
 }
 
 void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *color) {
@@ -93,16 +93,16 @@ void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
     rect_tuple_copy(rect, &area);
     rect_tuple_clip_bound(&area, &(self->dimension));
 
-    const unsigned int lineWidth = self->width;
-    const unsigned int rWidth = rect_tuple_width(&area);
-    const unsigned int rHeight = rect_tuple_height(&area);
+    const uint lineWidth = self->width;
+    const uint rWidth = rect_tuple_width(&area);
+    const uint rHeight = rect_tuple_height(&area);
 
     Rgba8 tempColor;
-    unsigned int *buffer = self->buffer;
-    for (unsigned int iY = 0; iY < rHeight; iY++) {
-        const unsigned int posY = (rect->y0 + iY) * lineWidth;
-        for (unsigned int iX = 0; iX < rWidth; iX++) {
-            unsigned int pos = (rect->x0 + iX) + posY;
+    uint *buffer = self->buffer;
+    for (uint iY = 0; iY < rHeight; iY++) {
+        const uint posY = (rect->y0 + iY) * lineWidth;
+        for (uint iX = 0; iX < rWidth; iX++) {
+            uint pos = (rect->x0 + iX) + posY;
 
             rgba_8_from_int(&tempColor, buffer[pos]);
             rgba_8_on_color(&tempColor, color);
@@ -110,11 +110,11 @@ void ll_canvas_fill_color(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
         }
     }
 
-    _report_dirty_rect(self, &area);
+    report_dirty_rect(self, &area);
 }
 
 void ll_canvas_copy_area(ll_canvas *self, const PointTuple *point, ll_canvas *source, const RectTuple *copyArea,
-                         const unsigned char blend) {
+                         const byte blend) {
     RectTuple destArea = {
            .x0 = point->x,
            .y0= point->y,
@@ -125,9 +125,9 @@ void ll_canvas_copy_area(ll_canvas *self, const PointTuple *point, ll_canvas *so
     rect_tuple_copy(copyArea, &srcArea);
     rect_tuple_clip_bound(&srcArea, &source->dimension);
 
-    int sourceWidth = source->width;
+    int sourceWidth = (int)(source->width);
     int sourceHeight = rect_tuple_height(&srcArea);
-    int destWidth = self->width;
+    int destWidth = (int)(self->width);
 
 
     destArea.x1 = destArea.x0 + rect_tuple_width(&srcArea) - 1;
@@ -142,8 +142,8 @@ void ll_canvas_copy_area(ll_canvas *self, const PointTuple *point, ll_canvas *so
 
     int sourceY;
     int destY;
-    unsigned int *sourcePos;
-    unsigned int *destPos;
+    uint *sourcePos;
+    uint *destPos;
     for (int iY = 0; iY < drawHeight; ++iY) {
         sourceY = (iY + srcArea.y0) * sourceWidth;
         destY = (iY + destArea.y0) * destWidth;
@@ -162,13 +162,13 @@ void ll_canvas_copy_area(ll_canvas *self, const PointTuple *point, ll_canvas *so
         }
     }
 
-    _report_dirty_rect(self, &destArea);
+    report_dirty_rect(self, &destArea);
 }
 
 void ll_canvas_copy(ll_canvas *self,
                     const RectTuple *dimension,
                     ll_canvas *sourceCanvas,
-                    const unsigned char blend) {
+                    const byte blend) {
 
     PointTuple point = {
             dimension->x0,
@@ -176,47 +176,13 @@ void ll_canvas_copy(ll_canvas *self,
     };
 
     ll_canvas_copy_area(self, &point, sourceCanvas, dimension, blend);
-
-//    RectTuple area;
-//    rect_tuple_copy(dimension, &area);
-//    rect_tuple_clip_bound(&area, &sourceCanvas->dimension);
-//    rect_tuple_clip_bound(&area, &self->dimension);
-//
-//    int areaWidth = rect_tuple_width(&area);
-//    int areaHeight = rect_tuple_height(&area);
-//
-//    const int sourceWidth = sourceCanvas->width;
-//    const int canvasWidth = self->width;
-//
-//    Rgba8 bottom;
-//    Rgba8 top;
-//    for (int iY = 0; iY < areaHeight; iY++) {
-//        const int sourceY = (iY + area.y0) * sourceWidth;
-//        const int canvasY = (iY + area.y0) * canvasWidth;
-//        for (int iX = 0; iX < areaWidth; iX++) {
-//            unsigned int *sourcePos = &sourceCanvas->buffer[(iX + area.x0) + sourceY];
-//            unsigned int *canvasPos = &self->buffer[(iX + area.x0) + canvasY];
-//
-//            rgba_8_from_int(&top, *sourcePos);
-//            if (blend) {
-//                rgba_8_from_int(&bottom, *canvasPos);
-//                rgba_8_on_color(&bottom, &top);
-//                *canvasPos = rgba_8_to_int(&bottom);
-//            } else {
-//                *canvasPos = rgba_8_to_int(&top);
-//            }
-//        }
-//    }
-//
-//    _report_dirty_rect(self, &area);
 }
 
 void ll_canvas_fill_data(ll_canvas *self,
                          const RectTuple *pictureDimension,
-                         const unsigned int *buffer,
-                         const unsigned char blend) {
+                         const uint *buffer,
+                         const byte blend) {
     int picWidth = rect_tuple_width(pictureDimension);
-//    int picHeight = rect_tuple_height(pictureDimension);
 
     RectTuple area;
     rect_tuple_copy(pictureDimension, &area);
@@ -225,21 +191,20 @@ void ll_canvas_fill_data(ll_canvas *self,
     int areaWidth = rect_tuple_width(&area);
     int areaHeight = rect_tuple_height(&area);
 
-    unsigned int *canvas = self->buffer;
+    uint *canvas = self->buffer;
 
     Rgba8 colorBack;
     Rgba8 colorTop;
 
-    for (int iY = 0; iY < areaHeight; iY++) {
-        int bufferY = iY * picWidth;
-        int canvasY = (iY + (&area)->y0) * self->width;
+    for (uint iY = 0; iY < areaHeight; iY++) {
+        uint bufferY = iY * picWidth;
+        uint canvasY = (iY + (&area)->y0) * self->width;
 
         for (int x = 0; x < areaWidth; x++) {
-            int bufferPos = bufferY + x;
-            int canvasPos = canvasY + x + area.x0;
+            uint bufferPos = bufferY + x;
+            uint canvasPos = canvasY + x + area.x0;
 
             rgba8_from_int_abgr(&colorTop, buffer[bufferPos]);
-//            rgba_8_from_int(&colorTop, buffer[bufferPos]);
             if (blend) {
                 rgba_8_from_int(&colorBack, canvas[canvasPos]);
                 rgba_8_on_color(&colorBack, &colorTop);
@@ -251,7 +216,7 @@ void ll_canvas_fill_data(ll_canvas *self,
         }
     }
 
-    _report_dirty_rect(self, &area);
+    report_dirty_rect(self, &area);
 }
 
 /*
@@ -277,11 +242,11 @@ void ll_canvas_draw_frame(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
 
     Rgba8 tempColor;
     for (int line = 0; line < height; line++) {
-        int canvasY = (line + area.y0) * self->width;
+        uint canvasY = (line + area.y0) * self->width;
 
         if (line <= top || line > bottom) {
             for (int iX = 0; iX < width; ++iX) {
-                int pos = (area.x0 + iX) + canvasY;
+                uint pos = (area.x0 + iX) + canvasY;
 
                 rgba_8_from_int(&tempColor, self->buffer[pos]);
                 rgba_8_on_color(&tempColor, color);
@@ -290,7 +255,7 @@ void ll_canvas_draw_frame(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
         } else {
             for (int iX = 0; iX < width; ++iX) {
                 if (iX <= left || iX > right) {
-                    int pos = (area.x0 + iX) + canvasY;
+                    uint pos = (area.x0 + iX) + canvasY;
 
                     rgba_8_from_int(&tempColor, self->buffer[pos]);
                     rgba_8_on_color(&tempColor, color);
@@ -300,11 +265,11 @@ void ll_canvas_draw_frame(ll_canvas *self, const RectTuple *rect, const Rgba8 *c
         }
     }
 
-    _report_dirty_rect(self, &area);
+    report_dirty_rect(self, &area);
 }
 
 void ll_canvas_reset_dirty_rect(ll_canvas *self) {
-    _clear_dirty_flag(self);
+    clear_dirty_flag(self);
 }
 
 /*

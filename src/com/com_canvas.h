@@ -9,15 +9,15 @@
 #include "com_screen_device.h"
 
 typedef struct ll_canvas {
-    unsigned int width;
-    unsigned int height;
+    uint width;
+    uint height;
     RectTuple dimension;
 
-    unsigned int *buffer;
-    unsigned long bufferSize;
+    uint *buffer;
+    ulong bufferSize;
 
     RectTuple dirtyRect;
-    unsigned char isDirty;
+    byte isDirty;
 
     Rgba8 background;
 } ll_canvas;

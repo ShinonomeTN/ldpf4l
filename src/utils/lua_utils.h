@@ -10,6 +10,16 @@
 #define LUA_LIB_FUNCTION(name) \
 static const struct luaL_Reg name##_function[] =
 
+#define LUA_LIB_DEFINE(name) \
+static const struct luaL_Reg name##_function[] = {
+
+#define LUA_FUNC(lua_name, c_method) \
+{ lua_name, c_method },
+
+#define LUA_LIB_END() \
+    {NULL, NULL} \
+};
+
 #define LUA_TYPE_MEMBERS(name) \
 static const struct luaL_Reg name##_method[] =
 

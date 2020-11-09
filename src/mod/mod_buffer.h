@@ -5,6 +5,8 @@
 #ifndef LDPF4L_MOD_BUFFER_H
 #define LDPF4L_MOD_BUFFER_H
 
+#include "../utils/common_types.h"
+
 struct Buffer;
 
 static const char *MOD_t_BUFFER = "t_Buffer";
