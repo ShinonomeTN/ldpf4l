@@ -1,9 +1,10 @@
 #include <libusb.h>
 
 #include "../../utils/common_types.h"
-
 #include "../../com/com_screen_device.h"
 
+#ifndef LDPF4_DPF_DEVICE_H
+#define LDPF4_DPF_DEVICE_H
 
 #define DPF_BYTE_PRE_PIXEL 2
 
@@ -52,3 +53,5 @@ void dpf_destroy(dpf_device *device);
 int dpf_open_screen_device(libusb_device *usbDevice, ll_screen_device *screenDevice);
 
 extern ll_screen_device_CLASS ll_dpf_screen_CLASS;
+
+#endif // LDPF4_DPF_DEVICE_H

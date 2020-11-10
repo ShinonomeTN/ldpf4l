@@ -55,8 +55,6 @@ list(APPEND SRC_DPF_DRIVER
         src/driver/dpf/warp_scsi.c
         src/driver/dpf/dpf_device.h
         src/driver/dpf/dpf_device.c
-        src/driver/dpf/dpf_usb_utils.h
-        src/driver/dpf/dpf_usb_utils.c
         )
 
 add_compile_definitions(

@@ -5,13 +5,10 @@
 #include "dpf_device.h"
 #include "warp_scsi.h"
 
-#include "../../utils/common_types.h"
 #include "../../utils/log.h"
 
 #define USB_COMMAND_BLIT         0x12
 #define USB_COMMAND_SET_PROPERTY 0x01
-
-//int _flush_impl(struct ll_screen_device *device, unsigned int *pixels, RectTuple *dimension);
 
 struct dpf_device {
     libusb_device_handle *usbDevice;
@@ -29,7 +26,7 @@ struct dpf_device {
     int brightness;
 };
 
-static unsigned char global_buffer_exec_cmd[16] = {
+byte global_buffer_exec_cmd[16] = {
         0xcd, 0x00, 0x00, 0x00,
         0x00, 0x06, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,

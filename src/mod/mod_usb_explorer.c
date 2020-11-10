@@ -106,7 +106,7 @@ LUA_TYPE_END
 
 static int lf_context_devices(lua_State *L) {
 
-    libusb_context **context = (libusb_context **) luaU_checkoutSelf(L, t_USB_CONTEXT);
+    libusb_context **context = (libusb_context **) luaU_checkoutType(L, t_USB_CONTEXT);
 
     libusb_device **devices;
     ssize_t count = libusb_get_device_list(*context, &devices);
@@ -136,7 +136,7 @@ static int lf_context_devices(lua_State *L) {
 
 static int lf_context_gc(lua_State *L) {
     log_trace("[%s gc]", t_USB_CONTEXT);
-    libusb_context **context = (libusb_context **) luaU_checkoutSelf(L, t_USB_CONTEXT);
+    libusb_context **context = (libusb_context **) luaU_checkoutType(L, t_USB_CONTEXT);
     libusb_exit(*context);
     return 0;
 }
@@ -161,7 +161,7 @@ typedef struct libusb_device_descriptor device_descriptor;
 
 static int lf_usb_device_info(lua_State *L) {
 
-    libusb_device **device = (libusb_device **) luaU_checkoutSelf(L, t_USB_DEVICE);
+    libusb_device **device = (libusb_device **) luaU_checkoutType(L, t_USB_DEVICE);
     device_descriptor d;
 
     int error = libusb_get_device_descriptor(*device, &d);
@@ -187,7 +187,7 @@ static int lf_usb_device_info(lua_State *L) {
 }
 
 static int lf_usb_device_to_string(lua_State *L) {
-    luaU_checkoutSelf(L, t_USB_DEVICE);
+    luaU_checkoutType(L, t_USB_DEVICE);
     lua_pushfstring(L, "[%s *]", t_USB_DEVICE);
     return 1;
 }
@@ -203,7 +203,7 @@ static int lf_usb_device_to_string(lua_State *L) {
 typedef struct libusb_config_descriptor config_descriptor;
 
 static int lf_usb_device_configuration(lua_State *L) {
-    libusb_device **device = luaU_checkoutSelf(L, t_USB_DEVICE);
+    libusb_device **device = luaU_checkoutType(L, t_USB_DEVICE);
     int configIndex = luaL_checkinteger(L, 2);
 
     config_descriptor **config = (config_descriptor **) lua_newuserdata(L, sizeof(config_descriptor *));
@@ -291,7 +291,7 @@ int usb_config_read_interface(lua_State *L, const usb_interface *usbInterface) {
 }
 
 static int lf_usb_config_interfaces(lua_State *L) {
-    config_descriptor **config = (config_descriptor **) luaU_checkoutSelf(L, t_DEVICE_CONFIG);
+    config_descriptor **config = (config_descriptor **) luaU_checkoutType(L, t_DEVICE_CONFIG);
     int interfaceCount = (*config)->bNumInterfaces;
 
     lua_newtable(L);
@@ -305,7 +305,7 @@ static int lf_usb_config_interfaces(lua_State *L) {
 }
 
 static int lf_usb_device_config_info(lua_State *L) {
-    config_descriptor **config = luaU_checkoutSelf(L, t_DEVICE_CONFIG);
+    config_descriptor **config = luaU_checkoutType(L, t_DEVICE_CONFIG);
     lua_newtable(L);
 
     luaU_tablePutObjectField(L, *config, integer, bNumInterfaces);
@@ -323,7 +323,7 @@ static int lf_usb_device_config_info(lua_State *L) {
 
 static int lf_usb_device_config_gc(lua_State *L) {
     log_trace("[%s gc]", t_DEVICE_CONFIG);
-    config_descriptor **config = luaU_checkoutSelf(L, t_DEVICE_CONFIG);
+    config_descriptor **config = luaU_checkoutType(L, t_DEVICE_CONFIG);
     libusb_free_config_descriptor(*config);
     return 0;
 }

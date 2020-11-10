@@ -192,25 +192,21 @@ function testCanvasCopy(screen, canvas)
 
 end
 
-function testComposing(screen, canvas)
-
-end
-
 function testBadApple(screen, canvas)
     local screenSize = screen:getSize()
-    local totalFrames = 1822
-    local x = (screenSize.width - 98) // 2
-    local y = (screenSize.height - 98) // 2
-    --local totalFrames = 3068
-    --local x = (screenSize.width - 114) // 2
-    --local y = (screenSize.height - 86) // 2
+    --local totalFrames = 1822
+    --local x = (screenSize.width - 98) // 2
+    --local y = (screenSize.height - 98) // 2
+    local totalFrames = 3068
+    local x = (screenSize.width - 114) // 2
+    local y = (screenSize.height - 86) // 2
 
     canvas:setBackground(0, 0, 0, 255)
     canvas:clear()
 
     for frame = 1, totalFrames do
-        --local img = Image.loadFile("../images/bad_apple/f" .. frame .. ".jpg")
-        local img = Image.loadFile("../images/daisuke/f" .. frame .. ".jpg")
+        local img = Image.loadFile("../images/bad_apple/f" .. frame .. ".jpg")
+        --local img = Image.loadFile("../images/daisuke/f" .. frame .. ".jpg")
         canvas:drawImage(img, x, y, false)
         screen:draw(canvas)
         --io.write("frame[" .. frame .. "]\r")
@@ -286,37 +282,24 @@ function useScreen(screen)
     print("Background : { red=" .. background.red .. ", green=" .. background.green .. ", blue=" .. background.blue .. ",alpha=" .. background.alpha .. " }")
 
     screen:setBackLightLevel(7);
-    canvas:clear()
-    screen:draw(canvas)
-    testForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRectAndForceFlush(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawRect(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawDots(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawFrame(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawImages(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testDrawAnimate(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testCanvasCopy(screen, canvas)
-    canvas:clear()
-    screen:draw(canvas)
-    testComposing(screen, canvas)
 
-    canvas:clear()
-    screen:draw(canvas)
-    testBadApple(screen, canvas)
+    local testList = {
+        testForceFlush,
+        testDrawRectAndForceFlush,
+        testDrawRect,
+        testDrawDots,
+        testDrawFrame,
+        testDrawImages,
+        testDrawAnimate,
+        testCanvasCopy,
+        testBadApple
+    }
+
+    for _,f in pairs(testList) do
+        canvas:clear()
+        screen:draw(canvas)
+        f(screen,canvas)
+    end
 
     screen:setBackLightLevel(0);
 end

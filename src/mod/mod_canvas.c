@@ -31,13 +31,13 @@ static int lf_canvas_create(lua_State *L) {
 
 static int lf_canvas_gc(lua_State *L) {
     log_trace("[%s gc]", t_CANVAS);
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
     ll_canvas_destroy(canvas);
     return 0;
 }
 
 static int lf_canvas_clear(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     ll_canvas_clear(canvas);
 
@@ -45,7 +45,7 @@ static int lf_canvas_clear(lua_State *L) {
 }
 
 static int lf_canvas_get_dirty_rect(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     const RectTuple *rect = ll_canvas_get_dirty_rect(canvas);
     lua_newtable(L);
@@ -58,7 +58,7 @@ static int lf_canvas_get_dirty_rect(lua_State *L) {
 }
 
 static int lf_canvas_get_is_dirty(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     lua_pushboolean(L, ll_canvas_is_dirty(canvas));
 
@@ -66,7 +66,7 @@ static int lf_canvas_get_is_dirty(lua_State *L) {
 }
 
 static int lf_canvas_set_point(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     PointTuple point = {
             luaL_checkinteger(L, 2),
@@ -86,7 +86,7 @@ static int lf_canvas_set_point(lua_State *L) {
 }
 
 static int lf_canvas_fill_color(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     RectTuple rect = {
             luaL_checkinteger(L, 2),
@@ -108,7 +108,7 @@ static int lf_canvas_fill_color(lua_State *L) {
 }
 
 static int lf_canvas_draw_image(lua_State *L) {
-    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *self = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
     ll_image *image = (ll_image *) luaU_checkUserDataNotNull(L, MOD_T_IMAGE, 2);
 
     int x = luaL_checkinteger(L, 3);
@@ -128,7 +128,7 @@ static int lf_canvas_draw_image(lua_State *L) {
 }
 
 static int lf_canvas_merge(lua_State *L) {
-    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *self = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
     ll_canvas *upper = (ll_canvas *) luaU_checkUserDataNotNull(L, t_CANVAS, 2);
 
     unsigned char onlyDirtyRect = !lua_toboolean(L, 3);
@@ -146,7 +146,7 @@ static int lf_canvas_merge(lua_State *L) {
 }
 
 static int lf_canvas_area_copy(lua_State *L) {
-    ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *self = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     PointTuple point = {
             luaL_checkinteger(L, 2),
@@ -170,7 +170,7 @@ static int lf_canvas_area_copy(lua_State *L) {
 }
 
 static int lf_canvas_draw_frame(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     RectTuple rect = {
             luaL_checkinteger(L, 2),
@@ -194,7 +194,7 @@ static int lf_canvas_draw_frame(lua_State *L) {
 }
 
 static int lf_canvas_get_size(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     lua_newtable(L);
     lua_pushstring(L, "width");
@@ -209,7 +209,7 @@ static int lf_canvas_get_size(lua_State *L) {
 }
 
 static int lf_canvas_get_background(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     const Rgba8 *color = ll_canvas_get_background(canvas);
 
@@ -224,7 +224,7 @@ static int lf_canvas_get_background(lua_State *L) {
 }
 
 static int lf_canvas_set_background(lua_State *L) {
-    ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
+    ll_canvas *canvas = (ll_canvas *) luaU_checkoutType(L, t_CANVAS);
 
     Rgba8 color = {
             luaL_checkinteger(L, 2),

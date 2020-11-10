@@ -1,7 +1,5 @@
 #include "warp_scsi.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "../../utils/log.h"
@@ -9,7 +7,7 @@
 #define USB_ENDPOINT_OUT 1
 #define USB_ENDPOINT_IN  0x81
 
-static unsigned char global_scsi_buffer_cmd[] = {
+byte global_scsi_buffer_cmd[] = {
         0x55,
         0x53,
         0x42,
@@ -45,17 +43,17 @@ static unsigned char global_scsi_buffer_cmd[] = {
         0x00,
 };
 
-void warp_scsi_set_command(const unsigned char *command, int commandLength);
+void warp_scsi_set_command(const byte *command, int commandLength);
 
-void warp_scsi_set_data_size(unsigned long dataSize);
+void warp_scsi_set_data_size(ulong dataSize);
 
 int warp_scsi_cmd_prepare(libusb_device_handle *device);
 
 int warp_scsi_operation_result(libusb_device_handle *device);
 
 int warp_scsi_write(libusb_device_handle *device,
-                    const unsigned char *command, int commandLength,
-                    unsigned char *data, const unsigned long size) {
+                    const byte *command, int commandLength,
+                    byte *data, const uint size) {
     warp_scsi_set_command(command, commandLength);
     warp_scsi_set_data_size(size);
 
@@ -65,7 +63,7 @@ int warp_scsi_write(libusb_device_handle *device,
     // Only write data when data buffer pointer was given
     if (data) {
         int transferred = 0;
-        int transferResult = libusb_bulk_transfer(device, USB_ENDPOINT_OUT, data, size, &transferred, 3000);
+        int transferResult = libusb_bulk_transfer(device, USB_ENDPOINT_OUT, data, (int)size, &transferred, 3000);
 
         if (transferResult < 0)
             log_error("Error while write data to device. result: %s(code %d).\n",
@@ -82,8 +80,8 @@ int warp_scsi_write(libusb_device_handle *device,
 
 int warp_scsi_read(
         libusb_device_handle *device,
-        const unsigned char *command, const int commandLength,
-        unsigned char *data, const unsigned long size) {
+        const byte *command, const int commandLength,
+        byte *data, const uint size) {
 
     warp_scsi_set_command(command, commandLength);
     warp_scsi_set_data_size(size);
@@ -94,7 +92,7 @@ int warp_scsi_read(
     // Only read data when data buffer pointer was given
     if (data) {
         int transferred = 0;
-        int transferResult = libusb_bulk_transfer(device, USB_ENDPOINT_IN, data, size, &transferred, 3000);
+        int transferResult = libusb_bulk_transfer(device, USB_ENDPOINT_IN, data, (int)size, &transferred, 3000);
         if (transferResult < 0)
             log_error(
                     "Error while read data from device. result: %s(code %d).",
@@ -115,12 +113,12 @@ int warp_scsi_read(
 
  */
 
-void warp_scsi_set_command(const unsigned char *command, int commandLength) {
+void warp_scsi_set_command(const byte *command, int commandLength) {
     global_scsi_buffer_cmd[14] = commandLength;
     memcpy(&global_scsi_buffer_cmd[15], command, commandLength);
 }
 
-void warp_scsi_set_data_size(unsigned long dataSize) {
+void warp_scsi_set_data_size(ulong dataSize) {
     global_scsi_buffer_cmd[8] = dataSize;
     global_scsi_buffer_cmd[9] = dataSize >> 8u;
     global_scsi_buffer_cmd[10] = dataSize >> 16u;

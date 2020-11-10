@@ -5,7 +5,7 @@
 #ifndef LUA_TEST_LUA_UTILS_H
 #define LUA_TEST_LUA_UTILS_H
 
-#define luaU_checkoutSelf(L, typeName) luaU_checkUserDataNotNull(L, typeName, 1)
+#define luaU_checkoutType(L, typeName) luaU_checkUserDataNotNull(L, typeName, 1)
 
 #define LUA_LIB_FUNCTION(name) \
 static const struct luaL_Reg name##_function[] =

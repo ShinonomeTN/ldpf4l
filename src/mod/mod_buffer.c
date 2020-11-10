@@ -29,13 +29,13 @@ static int lf_buffer_create(lua_State *L) {
 }
 
 static int lf_buffer_size(lua_State *L) {
-    Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
+    Buffer *buffer = (Buffer *) luaU_checkoutType(L, t_BUFFER);
     lua_pushinteger(L, buffer->size);
     return 1;
 }
 
 static int lf_buffer_set(lua_State *L) {
-    Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
+    Buffer *buffer = (Buffer *) luaU_checkoutType(L, t_BUFFER);
     unsigned long index = luaL_checkinteger(L, 2) + 1;
     if (!(index > 0 && index <= buffer->size)) luaL_error(L, "error: index out of range");
     buffer->buffer[index] = luaL_checkinteger(L, 2);
@@ -44,7 +44,7 @@ static int lf_buffer_set(lua_State *L) {
 }
 
 static int lf_buffer_get(lua_State *L) {
-    Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
+    Buffer *buffer = (Buffer *) luaU_checkoutType(L, t_BUFFER);
     unsigned long index = luaL_checkinteger(L, 2) + 1;
     if (!(index > 0 && index <= buffer->size)) luaL_error(L, "error: index out of range");
     lua_pushinteger(L, buffer->buffer[index]);
@@ -53,7 +53,7 @@ static int lf_buffer_get(lua_State *L) {
 }
 
 static int lf_buffer_copy_to(lua_State *L) {
-    Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
+    Buffer *buffer = (Buffer *) luaU_checkoutType(L, t_BUFFER);
     Buffer *target = (Buffer *) luaU_checkUserDataNotNull(L, t_BUFFER, 2);
     uint length = buffer->size < target->size ? target->size : buffer->size;
 
@@ -67,7 +67,7 @@ static int lf_buffer_copy_to(lua_State *L) {
 }
 
 static int lf_buffer_copy_range(lua_State *L) {
-    Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
+    Buffer *buffer = (Buffer *) luaU_checkoutType(L, t_BUFFER);
 
     int from = (int) luaL_checkinteger(L, 2) - 1;
     if (!(from >= 0 && from <= buffer->size)) luaL_error(L, "error: source start position out of range");

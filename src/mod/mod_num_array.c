@@ -35,7 +35,7 @@ static int _lua_new(lua_State *L) {
 }
 
 static int _lua_set(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
+    number_array *array = (number_array *) luaU_checkoutType(L, t_NumberArray);
     int index = luaL_checkinteger(L, 2);
     double value = luaL_checknumber(L, 3);
 
@@ -46,7 +46,7 @@ static int _lua_set(lua_State *L) {
 }
 
 static int _lua_get(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
+    number_array *array = (number_array *) luaU_checkoutType(L, t_NumberArray);
     int index = luaL_checkinteger(L, 2);
 
     luaL_argcheck(L, 1 <= index && index <= array->size, 2, NA_OUT_OF_RANGE);
@@ -57,14 +57,14 @@ static int _lua_get(lua_State *L) {
 }
 
 static int _lua_get_size(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
+    number_array *array = (number_array *) luaU_checkoutType(L, t_NumberArray);
 
     lua_pushnumber(L, array->size);
     return 1;
 }
 
 static int _lua_to_string(lua_State *L) {
-    number_array *array = (number_array *) luaU_checkoutSelf(L, t_NumberArray);
+    number_array *array = (number_array *) luaU_checkoutType(L, t_NumberArray);
 
     lua_pushfstring(L, t_NumberArray"[%d]", array->size);
 

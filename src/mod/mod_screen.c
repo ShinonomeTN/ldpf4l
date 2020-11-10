@@ -42,13 +42,13 @@ static int lf_screen_open_dpf(lua_State *L) {
 
 static int lf_screen_gc(lua_State *L) {
     log_trace("[%s gc]", t_SCREEN_DEVICE);
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     if (device != NULL) device->class->destroy(device);
     return 0;
 }
 
 static int lf_screen_get_backlight(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     int l;
     CLASS_INVOKE(device, get_backlight_level, &l);
     lua_pushinteger(L, l);
@@ -56,7 +56,7 @@ static int lf_screen_get_backlight(lua_State *L) {
 }
 
 static int lf_screen_set_backlight(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     int level = luaL_checkinteger(L, 2);
     if (!CLASS_IMPLEMENTED(device, set_backlight_level)) {
         lua_pushnil(L);
@@ -76,7 +76,7 @@ static int lf_screen_set_backlight(lua_State *L) {
 }
 
 static int lf_screen_get_background(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
 
     if (!CLASS_IMPLEMENTED(device, get_background)) {
         lua_pushnil(L);
@@ -96,7 +96,7 @@ static int lf_screen_get_background(lua_State *L) {
 }
 
 static int lf_screen_set_background(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
 
     if (!CLASS_IMPLEMENTED(device, set_background)) {
         lua_pushnil(L);
@@ -124,13 +124,13 @@ static int lf_screen_set_background(lua_State *L) {
 }
 
 static int lf_screen_get_driver_name(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     lua_pushstring(L, device->name);
     return 1;
 }
 
 static int lf_screen_get_color_depth(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     lua_pushinteger(L, device->colorDepth);
     return 1;
 }
@@ -140,7 +140,7 @@ static int lf_screen_draw(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkUserDataNotNull(L, MOD_t_CANVAS, 2);
     int canvasDirty = ll_canvas_is_dirty(canvas);
     if (!(forceFlush || canvasDirty)) return 0;
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
 
     int result;
 
@@ -166,7 +166,7 @@ static int lf_screen_draw(lua_State *L) {
 }
 
 static int lf_screen_get_size(lua_State *L) {
-    ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
+    ll_screen_device *device = (ll_screen_device *) luaU_checkoutType(L, t_SCREEN_DEVICE);
     unsigned int width = 0;
     unsigned int height = 0;
 
