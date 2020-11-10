@@ -8,7 +8,7 @@
 
 #include "../utils/log.h"
 
-static int ll_setLogLevel(lua_State *L) {
+static int lf_setLogLevel(lua_State *L) {
     int n = luaL_checkinteger(L, 1);
     if(n < 0 || n >= 6) {
         luaL_error(L, "log level must from 0 to 6");
@@ -18,52 +18,52 @@ static int ll_setLogLevel(lua_State *L) {
     return 0;
 }
 
-static int ll_logLevel(lua_State *L) {
+static int lf_logLevel(lua_State *L) {
     int logLevel = log_get_level();
     lua_pushnumber(L, logLevel);
     return 1;
 }
 
-static int ll_logLevelName(lua_State *L) {
+static int lf_logLevelName(lua_State *L) {
     const char *logLevelName = log_get_level_name();
     lua_pushstring(L, logLevelName);
     return 1;
 }
 
-static int ll_logTrace(lua_State *L) {
+static int lf_logTrace(lua_State *L) {
     log_trace(lua_tostring(L, -1));
     return 0;
 }
 
-static int ll_logInfo(lua_State *L) {
+static int lf_logInfo(lua_State *L) {
     log_info(lua_tostring(L, -1));
     return 0;
 }
 
-static int ll_logWarn(lua_State *L) {
+static int lf_logWarn(lua_State *L) {
     log_warn(lua_tostring(L, -1));
     return 0;
 }
 
-static int ll_logError(lua_State *L) {
+static int lf_logError(lua_State *L) {
     log_error(lua_tostring(L, -1));
     return 0;
 }
 
-static int ll_logFatal(lua_State *L) {
+static int lf_logFatal(lua_State *L) {
     log_fatal(lua_tostring(L, -1));
     return 0;
 }
 
 LUA_LIB_DEFINE(ldpf4l_Logging)
-        MEMBER("level", ll_logLevel)
-        MEMBER("info", ll_logInfo)
-        MEMBER("trace", ll_logTrace)
-        MEMBER("warn", ll_logWarn)
-        MEMBER("error", ll_logError)
-        MEMBER("fatal", ll_logFatal)
-        MEMBER("levelName", ll_logLevelName)
-        MEMBER("setLevel", ll_setLogLevel)
+    MEMBER("level", lf_logLevel)
+    MEMBER("info", lf_logInfo)
+    MEMBER("trace", lf_logTrace)
+    MEMBER("warn", lf_logWarn)
+    MEMBER("error", lf_logError)
+    MEMBER("fatal", lf_logFatal)
+    MEMBER("levelName", lf_logLevelName)
+    MEMBER("setLevel", lf_setLogLevel)
 LUA_LIB_END
 
 LUA_LIB_EXPORT(ldpf4l_Logging)

@@ -14,7 +14,7 @@
 
 #include "mod_usb_explorer.h"
 
-static int ll_table_readonly(lua_State *L) {
+static int lf_table_readonly(lua_State *L) {
     luaL_error(L, "error: table readonly");
     return 0;
 }
@@ -28,7 +28,7 @@ static int ll_table_readonly(lua_State *L) {
 
 #define t_USB_CONTEXT "ldpf4l.type.LibUsbContext"
 
-static int ll_explorer_create_context(lua_State *L) {
+static int lf_explorer_create_context(lua_State *L) {
     libusb_context **context = (libusb_context **) lua_newuserdata(L, sizeof(libusb_context *));
     *context = NULL;
     int error = libusb_init(&*context);
@@ -43,7 +43,7 @@ static int ll_explorer_create_context(lua_State *L) {
 
 #define t_API_VERSION "ldpf4l.type.LibUsbApiVersion"
 
-static int ll_explorer_libusb_api_version(lua_State *L) {
+static int lf_explorer_libusb_api_version(lua_State *L) {
     const struct libusb_version *version = libusb_get_version();
     lua_newtable(L);
 
@@ -57,7 +57,7 @@ static int ll_explorer_libusb_api_version(lua_State *L) {
     return 1;
 }
 
-static int ll_libusb_api_version_to_string(lua_State *L) {
+static int lf_libusb_api_version_to_string(lua_State *L) {
     lua_getmetatable(L, -1);
     luaL_getmetatable(L, t_API_VERSION);
     if (!lua_rawequal(L, -1, -2)) luaL_error(L, "error: %s expected", t_API_VERSION);
@@ -85,15 +85,15 @@ static int ll_libusb_api_version_to_string(lua_State *L) {
 
 LUA_LIB_DEFINE(ldpf4l_UsbExplorer)
     /* Create new t_LibUsbContext */
-    MEMBER("newContext", ll_explorer_create_context)
+    MEMBER("newContext", lf_explorer_create_context)
 
     /* Print LibUsb Api version */
-    MEMBER("apiVersion", ll_explorer_libusb_api_version)
+    MEMBER("apiVersion", lf_explorer_libusb_api_version)
 LUA_LIB_END
 
 LUA_TYPE_DEFINE(t_API_VERSION)
-    MEMBER("__newindex", ll_table_readonly)
-    MEMBER("__tostring", ll_libusb_api_version_to_string)
+    MEMBER("__newindex", lf_table_readonly)
+    MEMBER("__tostring", lf_libusb_api_version_to_string)
 LUA_TYPE_END
 
 /*
@@ -104,7 +104,7 @@ LUA_TYPE_END
 
 #define t_USB_DEVICE  "ldpf4l.type.LibUsbDevice"
 
-static int ll_context_devices(lua_State *L) {
+static int lf_context_devices(lua_State *L) {
 
     libusb_context **context = (libusb_context **) luaU_checkoutSelf(L, t_USB_CONTEXT);
 
@@ -134,7 +134,7 @@ static int ll_context_devices(lua_State *L) {
     return 1;
 }
 
-static int ll_context_gc(lua_State *L) {
+static int lf_context_gc(lua_State *L) {
     log_trace("[%s gc]", t_USB_CONTEXT);
     libusb_context **context = (libusb_context **) luaU_checkoutSelf(L, t_USB_CONTEXT);
     libusb_exit(*context);
@@ -142,11 +142,11 @@ static int ll_context_gc(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_USB_CONTEXT)
-    MEMBER("__newindex", ll_table_readonly)
-    MEMBER("__gc",       ll_context_gc)
+    MEMBER("__newindex", lf_table_readonly)
+    MEMBER("__gc", lf_context_gc)
 
     /* List all device handler */
-    MEMBER("devices",    ll_context_devices)
+    MEMBER("devices", lf_context_devices)
 LUA_TYPE_END
 
 /*
@@ -159,7 +159,7 @@ LUA_TYPE_END
 
 typedef struct libusb_device_descriptor device_descriptor;
 
-static int ll_usb_device_info(lua_State *L) {
+static int lf_usb_device_info(lua_State *L) {
 
     libusb_device **device = (libusb_device **) luaU_checkoutSelf(L, t_USB_DEVICE);
     device_descriptor d;
@@ -186,7 +186,7 @@ static int ll_usb_device_info(lua_State *L) {
     return 1;
 }
 
-static int ll_usb_device_to_string(lua_State *L) {
+static int lf_usb_device_to_string(lua_State *L) {
     luaU_checkoutSelf(L, t_USB_DEVICE);
     lua_pushfstring(L, "[%s *]", t_USB_DEVICE);
     return 1;
@@ -202,7 +202,7 @@ static int ll_usb_device_to_string(lua_State *L) {
 
 typedef struct libusb_config_descriptor config_descriptor;
 
-static int ll_usb_device_configuration(lua_State *L) {
+static int lf_usb_device_configuration(lua_State *L) {
     libusb_device **device = luaU_checkoutSelf(L, t_USB_DEVICE);
     int configIndex = luaL_checkinteger(L, 2);
 
@@ -214,13 +214,13 @@ static int ll_usb_device_configuration(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_USB_DEVICE)
-    MEMBER("__tostring", ll_usb_device_to_string)
+    MEMBER("__tostring", lf_usb_device_to_string)
 
     /* Return a table contains device information */
-    MEMBER("info",       ll_usb_device_info)
+    MEMBER("info", lf_usb_device_info)
 
     /* Get device configuration descriptor */
-    MEMBER("config",     ll_usb_device_configuration)
+    MEMBER("config", lf_usb_device_configuration)
 LUA_TYPE_END
 
 
@@ -237,7 +237,7 @@ LUA_TYPE_END
 typedef struct libusb_interface usb_interface;
 typedef struct libusb_interface_descriptor interface_descriptor;
 
-static int ll__usb_interface_read_endpoint_list(lua_State *L, const interface_descriptor *descriptor) {
+int usb_interface_read_endpoint_list(lua_State *L, const interface_descriptor *descriptor) {
     int count = descriptor->bNumEndpoints;
     lua_newtable(L);
 
@@ -265,7 +265,7 @@ static int ll__usb_interface_read_endpoint_list(lua_State *L, const interface_de
     return 1;
 }
 
-static int ll__usb_config_read_interface(lua_State *L, const usb_interface *usbInterface) {
+int usb_config_read_interface(lua_State *L, const usb_interface *usbInterface) {
     int count = usbInterface->num_altsetting;
 
     lua_newtable(L);
@@ -283,14 +283,14 @@ static int ll__usb_config_read_interface(lua_State *L, const usb_interface *usbI
         int extra_length = descriptor->extra_length;
         luaU_tablePutObjectFieldLString(L, descriptor, extra, extra_length);
 
-        luaU_tableKV(L, lua_pushstring(L, "endpointList"), ll__usb_interface_read_endpoint_list(L, descriptor));
+        luaU_tableKV(L, lua_pushstring(L, "endpointList"), usb_interface_read_endpoint_list(L, descriptor));
     }
 
     luaL_setmetatable(L, t_USB_INTERFACE);
     return 1;
 }
 
-static int ll_usb_config_interfaces(lua_State *L) {
+static int lf_usb_config_interfaces(lua_State *L) {
     config_descriptor **config = (config_descriptor **) luaU_checkoutSelf(L, t_DEVICE_CONFIG);
     int interfaceCount = (*config)->bNumInterfaces;
 
@@ -298,13 +298,13 @@ static int ll_usb_config_interfaces(lua_State *L) {
     for (int i = 0; i < interfaceCount; i++) {
         // Create interface
         const usb_interface *interface = &(*config)->interface[i];
-        luaU_tableKV(L, lua_pushinteger(L, i + 1), ll__usb_config_read_interface(L, interface));
+        luaU_tableKV(L, lua_pushinteger(L, i + 1), usb_config_read_interface(L, interface));
     }
 
     return 1;
 }
 
-static int ll_usb_device_config_info(lua_State *L) {
+static int lf_usb_device_config_info(lua_State *L) {
     config_descriptor **config = luaU_checkoutSelf(L, t_DEVICE_CONFIG);
     lua_newtable(L);
 
@@ -321,7 +321,7 @@ static int ll_usb_device_config_info(lua_State *L) {
     return 1;
 }
 
-static int ll_usb_device_config_gc(lua_State *L) {
+static int lf_usb_device_config_gc(lua_State *L) {
     log_trace("[%s gc]", t_DEVICE_CONFIG);
     config_descriptor **config = luaU_checkoutSelf(L, t_DEVICE_CONFIG);
     libusb_free_config_descriptor(*config);
@@ -329,18 +329,18 @@ static int ll_usb_device_config_gc(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_DEVICE_CONFIG)
-    MEMBER("__newindex", ll_table_readonly)
-    MEMBER("__gc",       ll_usb_device_config_gc)
-    MEMBER("info",       ll_usb_device_config_info)
-    MEMBER("interfaces", ll_usb_config_interfaces)
+    MEMBER("__newindex", lf_table_readonly)
+    MEMBER("__gc", lf_usb_device_config_gc)
+    MEMBER("info", lf_usb_device_config_info)
+    MEMBER("interfaces", lf_usb_config_interfaces)
 LUA_TYPE_END
 
 LUA_TYPE_DEFINE(t_USB_INTERFACE)
-    MEMBER("__newindex", ll_table_readonly)
+    MEMBER("__newindex", lf_table_readonly)
 LUA_TYPE_END
 
 LUA_TYPE_DEFINE(t_USB_ENDPOINT)
-    MEMBER("__newindex", ll_table_readonly)
+    MEMBER("__newindex", lf_table_readonly)
 LUA_TYPE_END
 
 /*

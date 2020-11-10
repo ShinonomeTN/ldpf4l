@@ -17,14 +17,14 @@ void report_dirty_rect(ll_canvas *self, RectTuple *drawRect) {
 
 #define clear_dirty_flag(self) (self->isDirty = 0)
 
-int ll_canvas_create(ll_canvas *self, int width, int height) {
+int ll_canvas_create(ll_canvas *self, uint width, uint height) {
 
     self->width = width;
     self->height = height;
 
     const ulong size = width * height;
 
-    unsigned int *buffer = (unsigned int *) malloc(sizeof(unsigned int) * size);
+    uint *buffer = (uint *) malloc(sizeof(uint) * size);
     if (buffer == NULL) {
         log_fatal("Could not create buffer for canvas");
         return -1;

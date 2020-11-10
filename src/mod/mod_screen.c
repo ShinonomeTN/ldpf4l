@@ -21,7 +21,7 @@
 #define CLASS_INVOKE(instance, method, ...) (instance->class->method(device, __VA_ARGS__))
 #define CLASS_IMPLEMENTED(instance, method) (instance->class->method != NULL)
 
-static int ll_screen_open_dpf(lua_State *L) {
+static int lf_screen_open_dpf(lua_State *L) {
     libusb_device **usbDevice = (libusb_device **) luaU_checkUserDataNotNull(L, MOD_t_USB_DEVICE, 1);
     ll_screen_device *screen = (ll_screen_device *) lua_newuserdata(L, sizeof(ll_screen_device));
     int result = dpf_open_screen_device(*usbDevice, screen);
@@ -40,14 +40,14 @@ static int ll_screen_open_dpf(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_gc(lua_State *L) {
+static int lf_screen_gc(lua_State *L) {
     log_trace("[%s gc]", t_SCREEN_DEVICE);
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     if (device != NULL) device->class->destroy(device);
     return 0;
 }
 
-static int ll_screen_get_backlight(lua_State *L) {
+static int lf_screen_get_backlight(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     int l;
     CLASS_INVOKE(device, get_backlight_level, &l);
@@ -55,7 +55,7 @@ static int ll_screen_get_backlight(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_set_backlight(lua_State *L) {
+static int lf_screen_set_backlight(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     int level = luaL_checkinteger(L, 2);
     if (!CLASS_IMPLEMENTED(device, set_backlight_level)) {
@@ -75,7 +75,7 @@ static int ll_screen_set_backlight(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_get_background(lua_State *L) {
+static int lf_screen_get_background(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
 
     if (!CLASS_IMPLEMENTED(device, get_background)) {
@@ -95,7 +95,7 @@ static int ll_screen_get_background(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_set_background(lua_State *L) {
+static int lf_screen_set_background(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
 
     if (!CLASS_IMPLEMENTED(device, set_background)) {
@@ -123,19 +123,19 @@ static int ll_screen_set_background(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_get_driver_name(lua_State *L) {
+static int lf_screen_get_driver_name(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     lua_pushstring(L, device->name);
     return 1;
 }
 
-static int ll_screen_get_color_depth(lua_State *L) {
+static int lf_screen_get_color_depth(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     lua_pushinteger(L, device->colorDepth);
     return 1;
 }
 
-static int ll_screen_draw(lua_State *L) {
+static int lf_screen_draw(lua_State *L) {
     int forceFlush = lua_toboolean(L, 3);
     ll_canvas *canvas = (ll_canvas *) luaU_checkUserDataNotNull(L, MOD_t_CANVAS, 2);
     int canvasDirty = ll_canvas_is_dirty(canvas);
@@ -165,7 +165,7 @@ static int ll_screen_draw(lua_State *L) {
     return 1;
 }
 
-static int ll_screen_get_size(lua_State *L) {
+static int lf_screen_get_size(lua_State *L) {
     ll_screen_device *device = (ll_screen_device *) luaU_checkoutSelf(L, t_SCREEN_DEVICE);
     unsigned int width = 0;
     unsigned int height = 0;
@@ -186,22 +186,22 @@ static int ll_screen_get_size(lua_State *L) {
 }
 
 LUA_LIB_DEFINE(ldpf4l_Screen)
-    FUNCTION("openDpf", ll_screen_open_dpf)
+    FUNCTION("openDpf", lf_screen_open_dpf)
 LUA_LIB_END
 
 LUA_TYPE_DEFINE(t_SCREEN_DEVICE)
-    MEMBER("__gc", ll_screen_gc)
+    MEMBER("__gc", lf_screen_gc)
 
-    MEMBER("getDriverName", ll_screen_get_driver_name)
-    MEMBER("getColorDepth", ll_screen_get_color_depth)
-    MEMBER("getSize", ll_screen_get_size)
+    MEMBER("getDriverName", lf_screen_get_driver_name)
+    MEMBER("getColorDepth", lf_screen_get_color_depth)
+    MEMBER("getSize", lf_screen_get_size)
 
-    MEMBER("getBacklightLevel", ll_screen_get_backlight)
-    MEMBER("setBackLightLevel", ll_screen_set_backlight)
-    MEMBER("getBackground", ll_screen_get_background)
-    MEMBER("setBackground", ll_screen_set_background)
+    MEMBER("getBacklightLevel", lf_screen_get_backlight)
+    MEMBER("setBackLightLevel", lf_screen_set_backlight)
+    MEMBER("getBackground", lf_screen_get_background)
+    MEMBER("setBackground", lf_screen_set_background)
 
-    MEMBER("draw", ll_screen_draw)
+    MEMBER("draw", lf_screen_draw)
 LUA_TYPE_END
 
 LUA_LIB_EXPORT(ldpf4l_Screen)

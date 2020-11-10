@@ -6,8 +6,6 @@
 
 #include "lauxlib.h"
 
-#include "../utils/lua_utils.h"
-
 #include "../com/com_canvas.h"
 #include "../com/com_image.h"
 #include "../utils/log.h"
@@ -16,9 +14,9 @@
 
 #define t_CANVAS "ldpf4l.type.Canvas"
 
-static int _canvas_create(lua_State *L) {
-    unsigned int width = luaL_checkinteger(L, 1);
-    unsigned int height = luaL_checkinteger(L, 2);
+static int lf_canvas_create(lua_State *L) {
+    uint width = luaL_checkinteger(L, 1);
+    uint height = luaL_checkinteger(L, 2);
 
     ll_canvas *canvas = (ll_canvas *) lua_newuserdata(L, sizeof(ll_canvas));
 
@@ -31,15 +29,14 @@ static int _canvas_create(lua_State *L) {
     return 1;
 }
 
-static int _canvas_gc(lua_State *L) {
+static int lf_canvas_gc(lua_State *L) {
     log_trace("[%s gc]", t_CANVAS);
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
-
     ll_canvas_destroy(canvas);
     return 0;
 }
 
-static int _canvas_clear(lua_State *L) {
+static int lf_canvas_clear(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     ll_canvas_clear(canvas);
@@ -47,7 +44,7 @@ static int _canvas_clear(lua_State *L) {
     return 0;
 }
 
-static int _canvas_get_dirty_rect(lua_State *L) {
+static int lf_canvas_get_dirty_rect(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     const RectTuple *rect = ll_canvas_get_dirty_rect(canvas);
@@ -60,7 +57,7 @@ static int _canvas_get_dirty_rect(lua_State *L) {
     return 1;
 }
 
-static int _canvas_get_is_dirty(lua_State *L) {
+static int lf_canvas_get_is_dirty(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     lua_pushboolean(L, ll_canvas_is_dirty(canvas));
@@ -68,7 +65,7 @@ static int _canvas_get_is_dirty(lua_State *L) {
     return 1;
 }
 
-static int _canvas_set_point(lua_State *L) {
+static int lf_canvas_set_point(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     PointTuple point = {
@@ -88,7 +85,7 @@ static int _canvas_set_point(lua_State *L) {
     return 0;
 }
 
-static int _canvas_fill_color(lua_State *L) {
+static int lf_canvas_fill_color(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     RectTuple rect = {
@@ -110,7 +107,7 @@ static int _canvas_fill_color(lua_State *L) {
     return 0;
 }
 
-static int _canvas_draw_image(lua_State *L) {
+static int lf_canvas_draw_image(lua_State *L) {
     ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
     ll_image *image = (ll_image *) luaU_checkUserDataNotNull(L, MOD_T_IMAGE, 2);
 
@@ -125,12 +122,12 @@ static int _canvas_draw_image(lua_State *L) {
 
     unsigned char blend = lua_toboolean(L, 5);
 
-    ll_canvas_fill_data(self, &rectTuple, (const unsigned int *) image->data, blend);
+    ll_canvas_fill_data(self, &rectTuple, (const uint *) image->data, blend);
 
     return 0;
 }
 
-static int _canvas_merge(lua_State *L) {
+static int lf_canvas_merge(lua_State *L) {
     ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
     ll_canvas *upper = (ll_canvas *) luaU_checkUserDataNotNull(L, t_CANVAS, 2);
 
@@ -148,7 +145,7 @@ static int _canvas_merge(lua_State *L) {
     return 0;
 }
 
-static int _canvas_area_copy(lua_State *L) {
+static int lf_canvas_area_copy(lua_State *L) {
     ll_canvas *self = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     PointTuple point = {
@@ -172,7 +169,7 @@ static int _canvas_area_copy(lua_State *L) {
     return 0;
 }
 
-static int _canvas_draw_frame(lua_State *L) {
+static int lf_canvas_draw_frame(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     RectTuple rect = {
@@ -196,7 +193,7 @@ static int _canvas_draw_frame(lua_State *L) {
     return 0;
 }
 
-static int _canvas_get_size(lua_State *L) {
+static int lf_canvas_get_size(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     lua_newtable(L);
@@ -211,7 +208,7 @@ static int _canvas_get_size(lua_State *L) {
     return 1;
 }
 
-static int _canvas_get_background(lua_State *L) {
+static int lf_canvas_get_background(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     const Rgba8 *color = ll_canvas_get_background(canvas);
@@ -226,7 +223,7 @@ static int _canvas_get_background(lua_State *L) {
 
 }
 
-static int _canvas_set_background(lua_State *L) {
+static int lf_canvas_set_background(lua_State *L) {
     ll_canvas *canvas = (ll_canvas *) luaU_checkoutSelf(L, t_CANVAS);
 
     Rgba8 color = {
@@ -242,27 +239,27 @@ static int _canvas_set_background(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_CANVAS)
-    MEMBER("__gc",          _canvas_gc)
+    MEMBER("__gc", lf_canvas_gc)
 
-    MEMBER("clear",         _canvas_clear)
-    MEMBER("getDirtyRect",  _canvas_get_dirty_rect)
-    MEMBER("isDirty",       _canvas_get_is_dirty)
+    MEMBER("clear", lf_canvas_clear)
+    MEMBER("getDirtyRect", lf_canvas_get_dirty_rect)
+    MEMBER("isDirty", lf_canvas_get_is_dirty)
 
-    MEMBER("setPoint",      _canvas_set_point)
-    MEMBER("fillColor",     _canvas_fill_color)
-    MEMBER("drawFrame",     _canvas_draw_frame)
-    MEMBER("drawImage",     _canvas_draw_image)
-    MEMBER("drawCanvas",    _canvas_merge)
-    MEMBER("copyArea",      _canvas_area_copy)
+    MEMBER("setPoint", lf_canvas_set_point)
+    MEMBER("fillColor", lf_canvas_fill_color)
+    MEMBER("drawFrame", lf_canvas_draw_frame)
+    MEMBER("drawImage", lf_canvas_draw_image)
+    MEMBER("drawCanvas", lf_canvas_merge)
+    MEMBER("copyArea", lf_canvas_area_copy)
 
-    MEMBER("getSize",       _canvas_get_size)
+    MEMBER("getSize", lf_canvas_get_size)
 
-    MEMBER("setBackground", _canvas_set_background)
-    MEMBER("getBackground", _canvas_get_background)
+    MEMBER("setBackground", lf_canvas_set_background)
+    MEMBER("getBackground", lf_canvas_get_background)
 LUA_TYPE_END
 
 LUA_LIB_DEFINE(ldpf4l_Canvas)
-    FUNCTION("new", _canvas_create)
+    FUNCTION("new", lf_canvas_create)
 LUA_LIB_END
 
 LUA_LIB_EXPORT(ldpf4l_Canvas)

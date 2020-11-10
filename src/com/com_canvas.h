@@ -27,7 +27,7 @@ typedef struct ll_canvas {
  *
  * */
 
-int ll_canvas_create(ll_canvas *self, int width, int height);
+int ll_canvas_create(ll_canvas *self, uint width, uint height);
 
 void ll_canvas_destroy(ll_canvas *self);
 

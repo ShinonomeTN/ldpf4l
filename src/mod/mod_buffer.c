@@ -16,7 +16,7 @@ typedef struct Buffer {
     unsigned char buffer[1];
 } Buffer;
 
-static int ll_buffer_create(lua_State *L) {
+static int lf_buffer_create(lua_State *L) {
     int size = luaL_checkinteger(L, 1);
     if (size <= 0) luaL_error(L, "error: buffer size must bigger than 0");
 
@@ -28,13 +28,13 @@ static int ll_buffer_create(lua_State *L) {
     return 1;
 }
 
-static int ll_buffer_size(lua_State *L) {
+static int lf_buffer_size(lua_State *L) {
     Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
     lua_pushinteger(L, buffer->size);
     return 1;
 }
 
-static int ll_buffer_set(lua_State *L) {
+static int lf_buffer_set(lua_State *L) {
     Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
     unsigned long index = luaL_checkinteger(L, 2) + 1;
     if (!(index > 0 && index <= buffer->size)) luaL_error(L, "error: index out of range");
@@ -43,7 +43,7 @@ static int ll_buffer_set(lua_State *L) {
     return 0;
 }
 
-static int ll_buffer_get(lua_State *L) {
+static int lf_buffer_get(lua_State *L) {
     Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
     unsigned long index = luaL_checkinteger(L, 2) + 1;
     if (!(index > 0 && index <= buffer->size)) luaL_error(L, "error: index out of range");
@@ -52,7 +52,7 @@ static int ll_buffer_get(lua_State *L) {
     return 1;
 }
 
-static int ll_buffer_copy_to(lua_State *L) {
+static int lf_buffer_copy_to(lua_State *L) {
     Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
     Buffer *target = (Buffer *) luaU_checkUserDataNotNull(L, t_BUFFER, 2);
     uint length = buffer->size < target->size ? target->size : buffer->size;
@@ -66,7 +66,7 @@ static int ll_buffer_copy_to(lua_State *L) {
     return 1;
 }
 
-static int ll_buffer_copy_range(lua_State *L) {
+static int lf_buffer_copy_range(lua_State *L) {
     Buffer *buffer = (Buffer *) luaU_checkoutSelf(L, t_BUFFER);
 
     int from = (int) luaL_checkinteger(L, 2) - 1;
@@ -90,24 +90,18 @@ static int ll_buffer_copy_range(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_BUFFER)
-    MEMBER("__newindex", ll_buffer_set)
-    MEMBER("__index", ll_buffer_get)
-    MEMBER("size", ll_buffer_size)
-    MEMBER("copyTo", ll_buffer_copy_to)
-    MEMBER("copyRange", ll_buffer_copy_range)
+    MEMBER("__newindex", lf_buffer_set)
+    MEMBER("__index", lf_buffer_get)
+    MEMBER("size", lf_buffer_size)
+    MEMBER("copyTo", lf_buffer_copy_to)
+    MEMBER("copyRange", lf_buffer_copy_range)
 LUA_TYPE_END
 
 LUA_LIB_DEFINE(ldpf4l_Buffer)
-    FUNCTION("new", ll_buffer_create)
+    FUNCTION("new", lf_buffer_create)
 LUA_LIB_END
 
 LUA_LIB_EXPORT(ldpf4l_Buffer)
     EXPORT_TYPE(t_BUFFER)
     EXPORT_LIB(ldpf4l_Buffer)
 LUA_LIB_EXPORT_END
-
-//LUAMOD_API int luaopen_buffer(lua_State *L) {
-//    luaU_registerType(L, t_BUFFER);
-//    luaL_newlib(L, buffer_function);
-//    return 1;
-//}

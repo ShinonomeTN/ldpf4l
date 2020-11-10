@@ -14,7 +14,7 @@
 
 #define t_IMAGE "ldpf4l.type.image"
 
-static int ll_image_load_from_file(lua_State *L) {
+static int lf_image_load_from_file(lua_State *L) {
     const char *filename = lua_tostring(L, 1);
 //    log_trace("Open image file %s ", filename);
     FILE *file = fopen(filename, "r");
@@ -37,7 +37,7 @@ static int ll_image_load_from_file(lua_State *L) {
     return 1;
 }
 
-static int ll_image_get_size(lua_State *L) {
+static int lf_image_get_size(lua_State *L) {
     ll_image *image = (ll_image *) luaU_checkoutSelf(L, t_IMAGE);
 
     lua_newtable(L);
@@ -47,7 +47,7 @@ static int ll_image_get_size(lua_State *L) {
     return 1;
 }
 
-static int ll_image_get_info(lua_State *L) {
+static int lf_image_get_info(lua_State *L) {
     ll_image *image = (ll_image *) luaU_checkoutSelf(L, t_IMAGE);
 
     lua_newtable(L);
@@ -60,7 +60,7 @@ static int ll_image_get_info(lua_State *L) {
     return 1;
 }
 
-static int ll_image_gc(lua_State *L) {
+static int lf_image_gc(lua_State *L) {
     log_trace("[%s gc]", t_IMAGE);
 
     ll_image *image = (ll_image *) luaU_checkoutSelf(L, t_IMAGE);
@@ -71,14 +71,14 @@ static int ll_image_gc(lua_State *L) {
 }
 
 LUA_TYPE_DEFINE(t_IMAGE)
-    MEMBER("__gc", ll_image_gc)
+    MEMBER("__gc", lf_image_gc)
 
-    MEMBER("getSize", ll_image_get_size)
-    MEMBER("getInfo", ll_image_get_info)
+    MEMBER("getSize", lf_image_get_size)
+    MEMBER("getInfo", lf_image_get_info)
 LUA_TYPE_END
 
 LUA_LIB_DEFINE(ldpf4l_Image)
-    MEMBER("loadFile", ll_image_load_from_file)
+    MEMBER("loadFile", lf_image_load_from_file)
 LUA_LIB_END
 
 LUA_LIB_EXPORT(ldpf4l_Image)
