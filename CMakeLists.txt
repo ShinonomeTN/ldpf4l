@@ -4,7 +4,7 @@ set(CMAKE_C_STANDARD 11)
 
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(Lua53 REQUIRED lua-5.3)
+pkg_check_modules(Lua53 REQUIRED lua5.3)
 
 #[[ Libusb ]]
 pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
