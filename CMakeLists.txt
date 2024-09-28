@@ -39,6 +39,8 @@ list(APPEND SRC_MOD
         src/mod/mod_num_array.c
         src/mod/mod_usb_explorer.h
         src/mod/mod_usb_explorer.c
+        src/mod/mod_screen_dpf.h
+        src/mod/mod_screen_dpf.c
         )
 
 list(APPEND SRC_UTILS
@@ -84,3 +86,20 @@ set_target_properties(ldpf4l PROPERTIES PREFIX "")
 target_compile_options(ldpf4l PUBLIC ${LIBUSB_CFLAGS_OTHER} ${Lua53_CFLAGS_OTHER})
 
 target_link_libraries(ldpf4l ${LIBUSB_LIBRARIES})
+
+#
+# Test
+#
+
+list(APPEND SRC_TEST_SCSI
+        src/test/test_scsi.c
+        src/driver/dpf/dpf_device.c
+        src/driver/dpf/dpf_device.h
+        src/driver/dpf/warp_scsi.c
+        src/driver/dpf/warp_scsi.h
+        src/utils/log.c
+        src/utils/log.h
+)
+
+add_executable(test_scsi src/test/test_scsi.c ${SRC_TEST_SCSI})
+target_link_libraries(test_scsi ${LIBUSB_LIBRARIES})

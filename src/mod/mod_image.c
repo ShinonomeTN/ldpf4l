@@ -23,7 +23,7 @@ static int lf_image_load_from_file(lua_State *L) {
         lua_pushstring(L, "error: could not open file");
         return 2;
     }
-    ll_image *image = (ll_image *) lua_newuserdata(L, sizeof(ll_image));
+    ll_image *image = lua_newuserdata(L, sizeof(ll_image));
 
     ll_image_load(image, file, 4);
 
@@ -38,7 +38,7 @@ static int lf_image_load_from_file(lua_State *L) {
 }
 
 static int lf_image_get_size(lua_State *L) {
-    ll_image *image = (ll_image *) luaU_checkoutType(L, t_IMAGE);
+    ll_image *image = luaU_checkoutType(L, t_IMAGE);
 
     lua_newtable(L);
     luaU_tablePutObjectField(L, image, integer, width);
@@ -48,7 +48,7 @@ static int lf_image_get_size(lua_State *L) {
 }
 
 static int lf_image_get_info(lua_State *L) {
-    ll_image *image = (ll_image *) luaU_checkoutType(L, t_IMAGE);
+    ll_image *image = luaU_checkoutType(L, t_IMAGE);
 
     lua_newtable(L);
     luaU_tablePutObjectField(L, image, integer, channels);
@@ -63,7 +63,7 @@ static int lf_image_get_info(lua_State *L) {
 static int lf_image_gc(lua_State *L) {
     log_trace("[%s gc]", t_IMAGE);
 
-    ll_image *image = (ll_image *) luaU_checkoutType(L, t_IMAGE);
+    ll_image *image = luaU_checkoutType(L, t_IMAGE);
 
     ll_image_free(image);
 

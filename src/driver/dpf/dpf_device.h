@@ -1,4 +1,5 @@
 #include <libusb.h>
+#include <unitypes.h>
 
 #include "../../utils/common_types.h"
 #include "../../com/com_screen_device.h"
@@ -10,48 +11,42 @@
 
 #define DPF_ERROR_DEVICE_NOT_SUPPORTED 1
 
-typedef struct dpf_device dpf_device;
+typedef struct dpf_device_t dpf_device_t;
 
-//dpf_device *dpf_init(struct libusb_device_handle *descriptor);
-
-int dpf_device_open(libusb_device *device, dpf_device **new_device);
+int32_t dpf_device_open(libusb_device *device, dpf_device_t **new_device);
 
 // Ask the screen it's dimension
-int dpf_device_acquire_dimensions(dpf_device *device);
+int32_t dpf_device_acquire_dimensions(dpf_device_t *device);
 
 // Set back-light brightness
-int dpf_device_set_brightness(dpf_device *device, unsigned int brightness);
+int32_t dpf_device_set_brightness(dpf_device_t *device, uint32_t brightness);
 
-unsigned int dpf_device_get_brightness(dpf_device *device);
+int32_t dpf_device_get_brightness(const dpf_device_t *device);
 
-void dpf_device_set_background_color(dpf_device *device, unsigned char r, unsigned char g, unsigned char b);
+void dpf_device_set_background_color(dpf_device_t *device, uint8_t r, uint8_t g, uint8_t b);
 
-Rgba8 *dpf_device_get_background_color(dpf_device *device);
+Rgba8 *dpf_device_get_background_color(dpf_device_t *device);
 
-int dpf_device_bulk_transfer(dpf_device *device, const unsigned char *buffer, const RectTuple *rectTuple);
+int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, const RectTuple *rectTuple);
 
-int dpf_device_flush(dpf_device *device, const RectTuple *rectTuple);
+int32_t dpf_device_flush(dpf_device_t *device, const RectTuple *rectTuple);
 
 // Properties
-unsigned int dpf_device_screen_width(dpf_device *device);
+uint32_t dpf_device_screen_width(const dpf_device_t *device);
 
-unsigned int dpf_device_screen_height(dpf_device *device);
+uint32_t dpf_device_screen_height(const dpf_device_t *device);
 
 // Device buffer
-unsigned long dpf_device_get_buffer_size(dpf_device *device);
+uint32_t dpf_device_get_buffer_size(const dpf_device_t *device);
 
-unsigned char *dpf_device_get_buffer(dpf_device *device);
+uint8_t *dpf_device_get_buffer(const dpf_device_t *device);
 
-void dpf_destroy(dpf_device *device);
+void dpf_destroy(dpf_device_t *device);
 
 /*
  *
  *
  *
  * */
-
-int dpf_open_screen_device(libusb_device *usbDevice, ll_screen_device *screenDevice);
-
-extern ll_screen_device_CLASS ll_dpf_screen_CLASS;
 
 #endif // LDPF4_DPF_DEVICE_H

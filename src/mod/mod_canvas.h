@@ -12,4 +12,4 @@ static const char *MOD_t_CANVAS = "ldpf4l.type.Canvas";
 
 LUA_LIB_EXPORT_DEFINE(ldpf4l_Canvas)
 
-#endif //LDPF4L_MOD_CANVAS_H
+#endif

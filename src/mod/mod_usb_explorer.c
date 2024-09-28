@@ -29,9 +29,9 @@ static int lf_table_readonly(lua_State *L) {
 #define t_USB_CONTEXT "ldpf4l.type.LibUsbContext"
 
 static int lf_explorer_create_context(lua_State *L) {
-    libusb_context **context = (libusb_context **) lua_newuserdata(L, sizeof(libusb_context *));
+    libusb_context **context = lua_newuserdata(L, sizeof(libusb_context *));
     *context = NULL;
-    int error = libusb_init(&*context);
+    const int error = libusb_init(context);
 
     if (error < 0) luaL_error(L, "error: open context failed, error %s(%d)", libusb_error_name(error), error);
 
@@ -106,7 +106,7 @@ LUA_TYPE_END
 
 static int lf_context_devices(lua_State *L) {
 
-    libusb_context **context = (libusb_context **) luaU_checkoutType(L, t_USB_CONTEXT);
+    libusb_context **context = luaU_checkoutType(L, t_USB_CONTEXT);
 
     libusb_device **devices;
     ssize_t count = libusb_get_device_list(*context, &devices);
@@ -123,7 +123,7 @@ static int lf_context_devices(lua_State *L) {
         lua_pushinteger(L, i + 1); // stack: 1
 
         // Store device pointer in lua and give it a type
-        libusb_device **handle = (libusb_device **) lua_newuserdata(L, sizeof(libusb_device *)); // stack: 2
+        libusb_device **handle = lua_newuserdata(L, sizeof(libusb_device *)); // stack: 2
         *handle = device;
 
         luaL_setmetatable(L, t_USB_DEVICE);
@@ -136,7 +136,7 @@ static int lf_context_devices(lua_State *L) {
 
 static int lf_context_gc(lua_State *L) {
     log_trace("[%s gc]", t_USB_CONTEXT);
-    libusb_context **context = (libusb_context **) luaU_checkoutType(L, t_USB_CONTEXT);
+    libusb_context **context = luaU_checkoutType(L, t_USB_CONTEXT);
     libusb_exit(*context);
     return 0;
 }
@@ -161,7 +161,7 @@ typedef struct libusb_device_descriptor device_descriptor;
 
 static int lf_usb_device_info(lua_State *L) {
 
-    libusb_device **device = (libusb_device **) luaU_checkoutType(L, t_USB_DEVICE);
+    libusb_device **device = luaU_checkoutType(L, t_USB_DEVICE);
     device_descriptor d;
 
     int error = libusb_get_device_descriptor(*device, &d);
@@ -206,7 +206,7 @@ static int lf_usb_device_configuration(lua_State *L) {
     libusb_device **device = luaU_checkoutType(L, t_USB_DEVICE);
     int configIndex = luaL_checkinteger(L, 2);
 
-    config_descriptor **config = (config_descriptor **) lua_newuserdata(L, sizeof(config_descriptor *));
+    config_descriptor **config = lua_newuserdata(L, sizeof(config_descriptor *));
     libusb_get_config_descriptor(*device, configIndex, &*config);
     luaL_setmetatable(L, t_DEVICE_CONFIG);
 
@@ -291,7 +291,7 @@ int usb_config_read_interface(lua_State *L, const usb_interface *usbInterface) {
 }
 
 static int lf_usb_config_interfaces(lua_State *L) {
-    config_descriptor **config = (config_descriptor **) luaU_checkoutType(L, t_DEVICE_CONFIG);
+    config_descriptor **config = luaU_checkoutType(L, t_DEVICE_CONFIG);
     int interfaceCount = (*config)->bNumInterfaces;
 
     lua_newtable(L);

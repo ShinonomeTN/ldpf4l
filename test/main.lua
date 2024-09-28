@@ -1,10 +1,10 @@
-Canvas = require "ldpf4l.Canvas"
 UsbExplorer = require "ldpf4l.UsbExplorer"
+Canvas = require "ldpf4l.Canvas"
 Screen = require "ldpf4l.Screen"
 Image = require "ldpf4l.Image"
 log = require "ldpf4l.Logging"
 
-log.setLevel(2)
+log.setLevel(0)
 
 function printTable(table)
     for k, v in pairs(table) do
@@ -214,7 +214,6 @@ function testBadApple(screen, canvas)
     end
 end
 
-log.level(4)
 
 print("Hello world!")
 print("Greeting from lua VM!")
