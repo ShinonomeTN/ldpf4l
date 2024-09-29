@@ -35,7 +35,7 @@ static int lf_explorer_create_context(lua_State *L) {
 
     if (error < 0) luaL_error(L, "error: open context failed, error %s(%d)", libusb_error_name(error), error);
 
-    if (log_get_level() <= 2) libusb_set_option(*context, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_DEBUG);
+    // if (log_get_level() <= 2) libusb_set_option(*context, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_DEBUG);
 
     luaL_setmetatable(L, t_USB_CONTEXT);
     return 1;
