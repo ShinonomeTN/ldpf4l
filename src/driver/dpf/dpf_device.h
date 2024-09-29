@@ -1,11 +1,8 @@
-#include <libusb.h>
-#include <unitypes.h>
-
-#include "../../utils/common_types.h"
-#include "../../com/com_screen_device.h"
-
 #ifndef LDPF4_DPF_DEVICE_H
 #define LDPF4_DPF_DEVICE_H
+
+#include <libusb.h>
+#include <unitypes.h>
 
 #define DPF_BYTE_PRE_PIXEL 2
 
@@ -27,11 +24,11 @@ int32_t dpf_device_get_brightness(const dpf_device_t *device);
 
 void dpf_device_set_background_color(dpf_device_ptr_t device, uint8_t r, uint8_t g, uint8_t b);
 
-Rgba8 *dpf_device_get_background_color(dpf_device_t *device);
+uint32_t *dpf_device_get_background_color(dpf_device_t *device);
 
-int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, const RectTuple *rectTuple);
+int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
 
-int32_t dpf_device_flush(dpf_device_t *device, const RectTuple *rectTuple);
+int32_t dpf_device_flush(dpf_device_t *device, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
 
 // Properties
 uint32_t dpf_device_screen_width(const dpf_device_t *device);

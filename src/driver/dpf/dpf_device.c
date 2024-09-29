@@ -33,10 +33,11 @@ typedef struct dpf_device_t {
     uint32_t buffer_len;
     uint8_t *buffer;
 
-    Rgba8 bg_color;
+    uint32_t bg_color;
 
     // Properties
     uint32_t brightness;
+
 } dpf_device_t;
 
 
@@ -57,7 +58,14 @@ int32_t dpf_device_open(libusb_device *device, dpf_device_ptr_t *new_device) {
 
     libusb_device_handle *handle;
 
-    result = libusb_open(device, &handle);
+    int32_t retry_open = 0;
+    do {
+        result = libusb_open(device, &handle);
+        if(result == 0) break;
+        retry_open++;
+        log_warn("Failed to open USB device, tried: %d times.", retry_open);
+    } while (retry_open < 5 && result < 0);
+
     if (result < 0) {
         log_fatal("Unable to open device: %s", libusb_error_name(result));
         return result;
@@ -96,15 +104,16 @@ int32_t dpf_device_open(libusb_device *device, dpf_device_ptr_t *new_device) {
 }
 
 void dpf_device_set_background_color(const dpf_device_ptr_t device, const uint8_t r, const uint8_t g, const uint8_t b) {
-    Rgba8 *backgroundColor = &device->bg_color;
-    backgroundColor->red = r;
-    backgroundColor->green = g;
-    backgroundColor->blue = b;
+    uint8_t *color = (uint8_t *)&device->bg_color;
 
-    backgroundColor->alpha = 0xFFu;
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+
+    color[3] = 0xFFu;
 }
 
-Rgba8 *dpf_device_get_background_color(dpf_device_t *device) {
+uint32_t *dpf_device_get_background_color(dpf_device_t *device) {
     return &device->bg_color;
 }
 
@@ -205,24 +214,31 @@ uint32_t dpf_device_screen_height(const dpf_device_t *device) {
     return device->screen_height;
 }
 
-int32_t dpf_device_flush(dpf_device_t *device, const RectTuple *rectTuple) {
-    return dpf_device_bulk_transfer(device, device->buffer, rectTuple);
+int32_t dpf_device_flush(
+    dpf_device_t *device,
+    const uint32_t x0, const uint32_t y0, const uint32_t x1, const uint32_t y1
+) {
+    return dpf_device_bulk_transfer(device, device->buffer, x0, y0, x1, y1);
 }
 
-int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, const RectTuple *rectTuple) {
+int32_t dpf_device_bulk_transfer(
+    dpf_device_t *device,
+    const uint8_t *buffer,
+    const uint32_t x0, const uint32_t y0, const uint32_t x1, const uint32_t y1
+) {
     #define TRANSFER_GET_DATA_SIZE(pixels) (pixels << 1U) // x2 to short
 
-    const uint32_t pixels = rect_tuple_width(rectTuple) * rect_tuple_height(rectTuple);
+    const uint32_t pixels = (x1 - x0 + 1) * (y1 - y0 + 1);
     const uint32_t data_len = TRANSFER_GET_DATA_SIZE(pixels);
 
     uint8_t *command = device->cmd_buf;
     DPF_SET_USB_COMMAND(command, USB_COMMAND_BLIT);
 
     uint16_t *params = (uint16_t *) &command[7];
-    params[0] = rectTuple->x0;
-    params[1] = rectTuple->y0;
-    params[2] = rectTuple->x1;
-    params[3] = rectTuple->y1;
+    params[0] = x0;
+    params[1] = y0;
+    params[2] = x1;
+    params[3] = y1;
 
     command[15] = 0;
 
