@@ -205,12 +205,19 @@ function testBadApple(screen, canvas)
     canvas:clear()
 
     for frame = 1, totalFrames do
+
+        local path = "../images/bad_apple/f" .. frame .. ".jpg"
         local img = Image.loadFile("../images/bad_apple/f" .. frame .. ".jpg")
         --local img = Image.loadFile("../images/daisuke/f" .. frame .. ".jpg")
+        if img == nil then
+            print("Expected image but got nil: "..path.."\n")
+            goto continue
+        end
         canvas:drawImage(img, x, y, false)
         screen:draw(canvas)
         --io.write("frame[" .. frame .. "]\r")
         --io.flush()
+        ::continue::
     end
 end
 
