@@ -3,6 +3,7 @@
 
 #include <libusb.h>
 #include "lua.h"
+#include "../com/com_screen_device.h"
 
 uint32_t dpf_open_screen_device(libusb_device *usbDevice, ll_screen_device *screenDevice);
 

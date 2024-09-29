@@ -43,7 +43,7 @@ int32_t _flush_impl(const ll_screen_device *device, const uint32_t *pixels, cons
         for (uint32_t iX = 0; iX < rWidth; iX++) {
 
             rgba_8_from_int(&color, pixels[(rectX + iX) + canvasY]);
-            if (color.alpha != 255) rgba_8_apply_alpha(&color, dpf_device_get_background_color(dpf));
+            if (color.alpha != 255) rgba_8_apply_alpha(&color, (Rgba8 *)dpf_device_get_background_color(dpf));
 
 //             attention: Because dpf is 2 bytes per pixel, so here the gap is 2
 //            deviceBuffer[(devicePointer * DPF_BYTE_PRE_PIXEL)] = TO_RGB565_H(color);
@@ -54,7 +54,7 @@ int32_t _flush_impl(const ll_screen_device *device, const uint32_t *pixels, cons
         }
     }
 
-    const int32_t result = dpf_device_flush(dpf, dimension);
+    const int32_t result = dpf_device_flush(dpf, dimension->x0, dimension->y0, dimension->x1, dimension->y1);
     if (result < 0) log_warn("could not flush data to screen.");
     return result;
 }
@@ -75,7 +75,7 @@ int32_t _set_background_impl(const ll_screen_device *device, const Rgba8 *color)
 }
 
 int32_t _get_background_impl(const ll_screen_device *device, Rgba8 *color) {
-    const Rgba8 *c = dpf_device_get_background_color(device->data);
+    const Rgba8 *c = (Rgba8 *) dpf_device_get_background_color(device->data);
     color->red = c->red;
     color->green = c->green;
     color->blue = c->blue;
