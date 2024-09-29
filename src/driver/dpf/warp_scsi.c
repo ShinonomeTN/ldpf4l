@@ -7,10 +7,8 @@
 
 #define DEVICE_ENDPOINT_OUT 1
 #define DEVICE_ENDPOINT_IN  0x81
-#define GLOBAL_SCSI_BUFFER_SIZE 32
 
-#define DEVICE_INTERFACE_ID 0
-
+#define GLOBAL_SCSI_BUFFER_SIZE 31
 const static uint8_t global_scsi_buffer_template[GLOBAL_SCSI_BUFFER_SIZE] = {
     0x55, 0x53, 0x42, 0x43, // dCBWSignature (0 - 3)
     0xde, 0xad, 0xbe, 0xef, // dCBWTag (4 - 7)
@@ -19,7 +17,7 @@ const static uint8_t global_scsi_buffer_template[GLOBAL_SCSI_BUFFER_SIZE] = {
     0x00, // bCBWLUN (13)
     0x10, // bCBWCBLength (14)
 
-    // SCSI cmd: (15 - 31)
+    // SCSI cmd: (15 - 30)
     0xcd, 0x00, 0x00, 0x00,
     0x00, 0x06, 0x11, 0xf8,
     0x70, 0x00, 0x40, 0x00,
@@ -32,26 +30,24 @@ typedef struct warp_scsi_ctx_t {
 } warp_scsi_ctx_t;
 
 
-int32_t warp_scsi_create_ctx(warp_scsi_ctx_t **ctx_out, libusb_device_handle *device) {
-    warp_scsi_ctx_t *new_ctx = malloc(sizeof(warp_scsi_ctx_t));
-    if (new_ctx == NULL) return 0;
-    new_ctx->device = device;
-    const int32_t result = libusb_claim_interface(device, DEVICE_INTERFACE_ID);
-    if (result < 0) {
-        log_error("Could not claim device interface %d", DEVICE_INTERFACE_ID);
-        free(new_ctx);
-        return result;
-    }
-    memcpy(&new_ctx->buffer, global_scsi_buffer_template, sizeof(global_scsi_buffer_template));
-    *ctx_out = new_ctx;
+int32_t warp_scsi_create_ctx(warp_scsi_ctx_ptr *scsi_ctx, libusb_device_handle *device) {
+    const warp_scsi_ctx_ptr ctx = malloc(sizeof(warp_scsi_ctx_t));
+    if (ctx == NULL) return 0;
+    ctx->device = device;
+
+    memcpy(ctx->buffer, global_scsi_buffer_template, sizeof(global_scsi_buffer_template));
+
+    *scsi_ctx = ctx;
     log_debug("SCSI device context created.");
     return 1;
 }
 
-void warp_scsi_destroy_ctx(warp_scsi_ctx_t *ctx) {
-    libusb_release_interface(ctx->device, DEVICE_INTERFACE_ID);
-    libusb_close(ctx->device);
+void warp_scsi_destroy_ctx(warp_scsi_ctx_ptr ctx) {
     free(ctx);
+}
+
+libusb_device_handle *warp_scsi_get_device(const warp_scsi_ctx_ptr ctx) {
+    return ctx->device;
 }
 
 void warp_scsi_set_command(uint8_t cmd_buf[], const uint8_t cmd[], uint8_t cmd_len);
@@ -70,13 +66,15 @@ int32_t warp_scsi_write(warp_scsi_ctx_t *ctx,
 
     libusb_device_handle *device = ctx->device;
 
-    const int prepareResult = warp_scsi_cmd_prepare(ctx->buffer, device);
-    if (prepareResult < 0) return prepareResult;
+    int32_t result = 0;
+    result = warp_scsi_cmd_prepare(ctx->buffer, device);
+
+    if (result < 0) return result;
 
     // Only write data when data buffer pointer was given
     if (data_buf) {
         int transferred = 0;
-        const int result = libusb_bulk_transfer(
+        result = libusb_bulk_transfer(
             device, DEVICE_ENDPOINT_OUT,
             data_buf, data_len,
             &transferred, 3000
@@ -175,27 +173,21 @@ int32_t warp_scsi_operation_result(libusb_device_handle *device) {
     // get ACK:
     uint8_t str_buf[13];
 
-    int32_t retryCount = 0;
-    int32_t timeout;
+    int32_t retry_cnt = 0;
+    int32_t timeout = 0;
     int32_t result = 0;
 
     do {
         const int32_t str_len = sizeof(str_buf);
-
         timeout = 0;
-        int transferred = 0;
-        result = libusb_bulk_transfer(
-            device,DEVICE_ENDPOINT_IN,
-            str_buf, str_len,
-            &transferred,
-            5000
-        );
+        int32_t transferred = 0;
+
+        result = libusb_bulk_transfer(device,DEVICE_ENDPOINT_IN, str_buf, str_len, &transferred, 5000);
 
         if (transferred != str_len) {
             timeout = 1;
             log_error("Read size doesn't equals to expected.");
         }
-        retryCount++;
 
         if (result < 0)
             log_error(
@@ -203,7 +195,9 @@ int32_t warp_scsi_operation_result(libusb_device_handle *device) {
             libusb_error_name(result),
             result
         );
-    } while (timeout && retryCount < 5);
+
+        retry_cnt++;
+    } while (timeout && retry_cnt < 5);
 
     if (strncmp(str_buf, "USBS", 4) != 0) {
         log_error("Got invalid reply.");

@@ -13,6 +13,8 @@
 
 typedef struct dpf_device_t dpf_device_t;
 
+typedef dpf_device_t* dpf_device_ptr_t;
+
 int32_t dpf_device_open(libusb_device *device, dpf_device_t **new_device);
 
 // Ask the screen it's dimension
@@ -23,7 +25,7 @@ int32_t dpf_device_set_brightness(dpf_device_t *device, uint32_t brightness);
 
 int32_t dpf_device_get_brightness(const dpf_device_t *device);
 
-void dpf_device_set_background_color(dpf_device_t *device, uint8_t r, uint8_t g, uint8_t b);
+void dpf_device_set_background_color(dpf_device_ptr_t device, uint8_t r, uint8_t g, uint8_t b);
 
 Rgba8 *dpf_device_get_background_color(dpf_device_t *device);
 

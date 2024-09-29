@@ -12,6 +12,8 @@
 
 #define DPF_DEV_CMD_BUFFER_SIZE 16
 
+#define DEVICE_INTERFACE_ID 0
+
 const static uint8_t dpf_cmd_buffer_template[DPF_DEV_CMD_BUFFER_SIZE] = {
     0xcd, 0x00, 0x00, 0x00,
     0x00, 0x06, 0x00, 0x00,
@@ -38,7 +40,7 @@ typedef struct dpf_device_t {
 } dpf_device_t;
 
 
-int32_t dpf_device_open(libusb_device *device, dpf_device_t **new_device) {
+int32_t dpf_device_open(libusb_device *device, dpf_device_ptr_t *new_device) {
 
     struct libusb_device_descriptor descriptor;
     libusb_get_device_descriptor(device, &descriptor);
@@ -51,25 +53,36 @@ int32_t dpf_device_open(libusb_device *device, dpf_device_t **new_device) {
         return DPF_ERROR_DEVICE_NOT_SUPPORTED;
     }
 
+    int32_t result = 0;
+
     libusb_device_handle *handle;
 
-    const int open_result = libusb_open(device, &handle);
-    if (open_result < 0) return open_result;
+    result = libusb_open(device, &handle);
+    if (result < 0) {
+        log_fatal("Unable to open device: %s", libusb_error_name(result));
+        return result;
+    }
 
-    warp_scsi_ctx_t* ctx;
+    result = libusb_claim_interface(handle, DEVICE_INTERFACE_ID);
+    if (result < 0) {
+        log_fatal("Could not claim device interface %d", DEVICE_INTERFACE_ID);
+        return result;
+    }
+
+    warp_scsi_ctx_ptr ctx;
     if(warp_scsi_create_ctx(&ctx, handle) < 0) {
-        log_fatal("Failed to create scsi context, error code %d", open_result);
+        log_fatal("Failed to create scsi context, error code %d", result);
         return -1;
     }
 
-    dpf_device_t *dpf = malloc(sizeof(dpf_device_t));
+    const dpf_device_ptr_t dpf = malloc(sizeof(dpf_device_t));
     if(dpf == NULL) {
         log_fatal("Out of memory");
         return -1;
     }
     dpf->scsi_device = ctx;
 
-    memcpy(&dpf->cmd_buf, dpf_cmd_buffer_template, sizeof(dpf_cmd_buffer_template));
+    memcpy(dpf->cmd_buf, dpf_cmd_buffer_template, sizeof(dpf_cmd_buffer_template));
 
     log_debug("Dpf device created.");
 
@@ -79,10 +92,10 @@ int32_t dpf_device_open(libusb_device *device, dpf_device_t **new_device) {
 
     dpf->buffer = NULL;
 
-    return open_result;
+    return result;
 }
 
-void dpf_device_set_background_color(dpf_device_t *device, const uint8_t r, const uint8_t g, const uint8_t b) {
+void dpf_device_set_background_color(const dpf_device_ptr_t device, const uint8_t r, const uint8_t g, const uint8_t b) {
     Rgba8 *backgroundColor = &device->bg_color;
     backgroundColor->red = r;
     backgroundColor->green = g;
@@ -202,7 +215,7 @@ int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, co
     const uint32_t pixels = rect_tuple_width(rectTuple) * rect_tuple_height(rectTuple);
     const uint32_t data_len = TRANSFER_GET_DATA_SIZE(pixels);
 
-    uint8_t *command = *device->cmd_buf;
+    uint8_t *command = device->cmd_buf;
     DPF_SET_USB_COMMAND(command, USB_COMMAND_BLIT);
 
     uint16_t *params = (uint16_t *) &command[7];
@@ -221,8 +234,15 @@ int32_t dpf_device_bulk_transfer(dpf_device_t *device, const uint8_t *buffer, co
 }
 
 void dpf_destroy(dpf_device_t *device) {
-    warp_scsi_ctx_t *handle = device->scsi_device;
-    warp_scsi_destroy_ctx(handle);
+    const warp_scsi_ctx_ptr scsi_ctx = device->scsi_device;
+    libusb_device_handle *usb_dev = warp_scsi_get_device(scsi_ctx);
+
+    libusb_release_interface(usb_dev, DEVICE_INTERFACE_ID);
+    log_trace("Release device interface %d.", DEVICE_INTERFACE_ID);
+    libusb_close(usb_dev);
+    log_trace("Close usb device.");
+
+    warp_scsi_destroy_ctx(scsi_ctx);
 
     if (device->buffer != NULL) free(device->buffer);
     free(device);
