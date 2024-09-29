@@ -5,6 +5,8 @@
 #ifndef LDPF4L_COM_SCREEN_DEVICE_H
 #define LDPF4L_COM_SCREEN_DEVICE_H
 
+#include <unitypes.h>
+
 #include "../utils/common_types.h"
 
 struct ll_screen_device_CLASS;
@@ -17,34 +19,34 @@ typedef struct ll_screen_device_CLASS {
      * All device accept an array of data, and a rectangle described a drawing area
      *
      * */
-    int (*flush)(struct ll_screen_device *device, const unsigned int *pixels, const RectTuple *dimension);
+    int32_t (*flush)(struct ll_screen_device *device, const uint32_t *pixels, const RectTuple *dimension);
 
     /*
      *
      * Normally, screen has a attribute to describe how bright it is and can be tune.
      *
      * */
-    int (*set_backlight_level)(struct ll_screen_device *device, const int level);
+    int32_t (*set_backlight_level)(struct ll_screen_device *device, int32_t level);
 
-    int (*get_backlight_level)(struct ll_screen_device *device, int *output);
+    int32_t (*get_backlight_level)(struct ll_screen_device *device, int32_t *output);
 
     /*
      *
      * Screens maybe not transparent, maybe it's, but we don't known if we have no instance of a screen.
      *
      * */
-    int (*set_background)(struct ll_screen_device *device, const Rgba8 *color);
+    int32_t (*set_background)(struct ll_screen_device *device, const Rgba8 *color);
 
-    int (*get_background)(struct ll_screen_device *device, Rgba8 *color);
+    int32_t (*get_background)(struct ll_screen_device *device, Rgba8 *color);
 
     /*
      *
      * Screen must have their own dimension
      *
      * */
-    int (*get_width)(struct ll_screen_device *device, unsigned int *output);
+    int32_t (*get_width)(struct ll_screen_device *device, uint32_t *output);
 
-    int (*get_height)(struct ll_screen_device *device, unsigned int *output);
+    int32_t (*get_height)(struct ll_screen_device *device, uint32_t *output);
 
     /*
      *
@@ -57,7 +59,7 @@ typedef struct ll_screen_device_CLASS {
 typedef struct ll_screen_device {
     const ll_screen_device_CLASS *class;
     const char *name;
-    unsigned char colorDepth;
+    uint8_t colorDepth;
     void *data;
 } ll_screen_device;
 
