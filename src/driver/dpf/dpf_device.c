@@ -124,23 +124,19 @@ static const uint8_t SCSI_CMD_READ[16] = {
     0x00, 0x00, 0x00, 0x00
 };
 
-int32_t dpf_device_acquire_dimensions(dpf_device_t *device) {
-//#define BUFFER_GET_WIDTH(buffer) (buffer[0] | (buffer[1] << 8U))
-//#define BUFFER_GET_HEIGHT(buffer) (buffer[2] | (buffer[3] << 8U))
+int32_t dpf_device_acquire_dimensions(const dpf_device_ptr_t device) {
 
     uint8_t buffer[5];
     const int32_t result = warp_scsi_read(device->scsi_device, SCSI_CMD_READ, sizeof(SCSI_CMD_READ), buffer, 5);
     if(result != 0) {
         log_warn("Get device dimensions failed.");
-        return -1;
+        return result;
     }
 
     // Device use short type, do the trick
     const uint16_t* data = (uint16_t *) buffer;
     const uint32_t width = data[0];
     const uint32_t height = data[1];
-    //       unsigned int width = BUFFER_GET_WIDTH(buffer);
-    //       unsigned int height = BUFFER_GET_HEIGHT(buffer);
 
     device->screen_width = width;
     device->screen_height = height;
@@ -148,6 +144,7 @@ int32_t dpf_device_acquire_dimensions(dpf_device_t *device) {
     const uint32_t buffer_len = width * height * DPF_BYTE_PRE_PIXEL;
     device->buffer_len = buffer_len;
     if (device->buffer != NULL) free(device->buffer);
+
     device->buffer = (uint8_t *) malloc(buffer_len);
     if (!device->buffer) {
         log_error("Could not allocate screen buffer.");
@@ -202,7 +199,7 @@ uint8_t *dpf_device_get_buffer(const dpf_device_t *device) {
     return device->buffer;
 }
 
-int32_t dpf_device_get_brightness(const dpf_device_t *device) {
+int32_t dpf_device_get_brightness(const dpf_device_ptr_t device) {
     return device->brightness;
 }
 
